@@ -68,5 +68,24 @@ public class SuperPeopleService implements ISuperPeopleService {
         return superPeopleRepository.findAll();
     }
 
+    @Override
+    public SuperPeople update(SuperPeople superPeople) throws SuperPeopleNotFoundException,
+            InvalidNameException, BattleAttributeWithValueZeroException,
+            TotalBattleAttributesOverThirtyException {
+        log.info("initialized SuperPeopleService.update");
+        var heroFind = superPeopleRepository.findById(superPeople.getId())
+                .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found")
+                );
+        log.info("processing update");
+        heroFind.setStrength(superPeople.getStrength());
+        heroFind.setConstitution(superPeople.getConstitution());
+        heroFind.setCharisma(superPeople.getCharisma());
+        heroFind.setDexterity(superPeople.getDexterity());
+        heroFind.setIntelligence(superPeople.getIntelligence());
+        heroFind.setWisdom(superPeople.getWisdom());
 
+        newSuperPeopleValidator(heroFind);
+        log.info("update complete");
+        return superPeopleRepository.save(heroFind);
+    }
 }
