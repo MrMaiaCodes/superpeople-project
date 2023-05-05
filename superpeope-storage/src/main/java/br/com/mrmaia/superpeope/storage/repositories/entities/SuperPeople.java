@@ -45,6 +45,24 @@ public class SuperPeople {
     @Column(name = "DS_TYPE")
     private String type;
 
+    @Column(name = "DS_STRENGTH")
+    private Long strength;
+
+    @Column(name = "DS_CONSTITUTION")
+    private Long constitution;
+
+    @Column(name = "DS_DEXTERITY")
+    private Long dexterity;
+
+    @Column(name = "DS_INTELLIGENCE")
+    private Long intelligence;
+
+    @Column(name = "DS_WISDOM")
+    private Long wisdom;
+
+    @Column(name = "DS_CHARISMA")
+    private Long charisma;
+
     public Long getId() { return id; }
 
     public void setId(long id) { this.id = id; }
