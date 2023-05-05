@@ -88,4 +88,15 @@ public class SuperPeopleService implements ISuperPeopleService {
         log.info("update complete");
         return superPeopleRepository.save(heroFind);
     }
+
+    @Override
+    public void delete(SuperPeople superPeople) throws SuperPeopleNotFoundException {
+        log.info("initialized equipmentService.delete");
+        var heroDelete = superPeopleRepository.findById(
+                superPeople.getId()).orElseThrow(() -> new SuperPeopleNotFoundException(
+                        "S04", "not found"));
+                log.info("processing delete");
+                superPeopleRepository.delete(heroDelete);
+                log.info("delete completed");
+    }
 }

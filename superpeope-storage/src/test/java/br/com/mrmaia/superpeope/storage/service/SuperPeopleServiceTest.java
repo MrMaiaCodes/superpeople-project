@@ -206,5 +206,40 @@ public class SuperPeopleServiceTest {
     }
 
     @Test
+    void testDeleteSuccess() throws SuperPeopleNotFoundException {
+        when(superPeopleRepository.findById(any())).thenReturn(Optional.of(
+                SuperPeople.builder()
+                        .name("Big Man").level(1L).currentExperience(1L)
+                        .nextLevelExperience(1L).planet("Big Planet")
+                        .superPowers(List.of(SuperPower.builder().id(1L).build()))
+                        .type("hero").strength(5L).constitution(5L).dexterity(5L)
+                        .intelligence(5L).wisdom(5L).charisma(5L)
+                        .build()
+        ));
+        superPeopleService.delete(SuperPeople.builder()
+                .name("Big Man").level(1L).currentExperience(1L)
+                .nextLevelExperience(1L).planet("Big Planet")
+                .superPowers(List.of(SuperPower.builder().id(1L).build()))
+                .type("hero").strength(5L).constitution(5L).dexterity(5L)
+                .intelligence(5L).wisdom(5L).charisma(5L)
+                .build());
+    }
+
+    @Test
+    void testDeleteSuperPeopleNotFoundExceptionError() throws SuperPeopleNotFoundException {
+        when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
+        SuperPeopleNotFoundException thrown = Assertions.assertThrows(
+                SuperPeopleNotFoundException.class, () -> {
+                    superPeopleService.delete(SuperPeople.builder()
+                            .name("Big Man").level(1L).currentExperience(1L)
+                            .nextLevelExperience(1L).planet("Big Planet")
+                            .superPowers(List.of(SuperPower.builder().id(1L).build()))
+                            .type("hero").strength(5L).constitution(5L).dexterity(5L)
+                            .intelligence(5L).wisdom(5L).charisma(5L)
+                            .build());
+                });
+        Assertions.assertEquals("S04", thrown.getCode());
+        Assertions.assertEquals("not found", thrown.getMessage());
+    }
 }
 

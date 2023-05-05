@@ -17,4 +17,6 @@ public interface ISuperPeopleService extends IService<SuperPeople>{
     SuperPeople update(SuperPeople superPeople) throws SuperPeopleNotFoundException,
             InvalidNameException, BattleAttributeWithValueZeroException,
             TotalBattleAttributesOverThirtyException;
+
+    void delete(SuperPeople superPeople) throws SuperPeopleNotFoundException;
 }
