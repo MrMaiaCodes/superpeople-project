@@ -1,7 +1,7 @@
-package br.com.mrmaia.superpeope.storage;
+package br.com.mrmaia.superpeope.storage.service;
 
-import br.com.mrmaia.superpeope.storage.controlleres.service.ISuperPowerService;
-import br.com.mrmaia.superpeope.storage.controlleres.service.impl.SuperPeopleService;
+import br.com.mrmaia.superpeope.storage.services.ISuperPowerService;
+import br.com.mrmaia.superpeope.storage.services.impl.SuperPeopleService;
 import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
 import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
 import br.com.mrmaia.superpeope.storage.exceptions.TotalBattleAttributesOverThirtyException;
@@ -64,7 +64,7 @@ public class SuperPeopleServiceTest {
         InvalidNameException thrown = Assertions.assertThrows(InvalidNameException.class, () -> {
             superPeopleService.save(
                     SuperPeople.builder()
-                            .name("Big Man").level(1L).currentExperience(1L)
+                            .name("").level(1L).currentExperience(1L)
                             .nextLevelExperience(1L).planet("Big Planet")
                             .superPowers(List.of(SuperPower.builder().id(1L).build()))
                             .type("hero").strength(5L).constitution(5L).dexterity(5L)
@@ -106,7 +106,7 @@ public class SuperPeopleServiceTest {
                             .nextLevelExperience(1L).planet("Big Planet")
                             .superPowers(List.of(SuperPower.builder().id(1L).build()))
                             .type("hero").strength(5L).constitution(5L).dexterity(5L)
-                            .intelligence(5L).wisdom(6L).charisma(5L)
+                            .intelligence(5L).wisdom(0L).charisma(5L)
                             .build());
                 });
 

@@ -1,4 +1,4 @@
 package br.com.mrmaia.superpeope.storage.services;
 
-public class teste {
+public interface ISuperPowerService {
 }

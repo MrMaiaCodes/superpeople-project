@@ -1,4 +1,4 @@
-package br.com.mrmaia.superpeope.storage.controlleres.service;
+package br.com.mrmaia.superpeope.storage.services;
 
 import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
 import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
