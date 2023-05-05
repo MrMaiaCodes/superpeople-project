@@ -1,4 +1,4 @@
-package br.com.mrmaia.superpeope.storage.controlleres;
+package br.com.mrmaia.superpeope.storage;
 
 import br.com.mrmaia.superpeope.storage.controlleres.service.ISuperPowerService;
 import br.com.mrmaia.superpeope.storage.controlleres.service.impl.SuperPeopleService;
