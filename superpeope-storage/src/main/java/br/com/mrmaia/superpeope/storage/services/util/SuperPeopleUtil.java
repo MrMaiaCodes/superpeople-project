@@ -2,6 +2,7 @@ package br.com.mrmaia.superpeope.storage.services.util;
 
 import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
 import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
+import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
 import br.com.mrmaia.superpeope.storage.exceptions.TotalBattleAttributesOverThirtyException;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 
@@ -19,6 +20,12 @@ public class SuperPeopleUtil {
     public static void superPeopleNameNullVerifier(String name) throws InvalidNameException {
         if (!StringUtil.validateStringIsNotNullOrBlank(name)) {
             throw new InvalidNameException("S01", "invalid name");
+        }
+    }
+
+    public static void superPeopleFoundVerifier(String name) throws SuperPeopleNotFoundException {
+        if (!StringUtil.validateStringIsNotNullOrBlank(name)) {
+            throw new SuperPeopleNotFoundException("S04", "not found");
         }
     }
 
