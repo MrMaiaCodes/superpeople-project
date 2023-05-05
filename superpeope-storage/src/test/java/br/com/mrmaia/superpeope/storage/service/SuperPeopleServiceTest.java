@@ -146,14 +146,12 @@ public class SuperPeopleServiceTest {
         Assertions.assertEquals("S04", thrown.getCode());
         Assertions.assertEquals("not found", thrown.getMessage());
     }
-    /*
+
     @Test
     void testListAllSuccess() {
         when(superPeopleRepository.findAll()).thenReturn(List.of());
         List<SuperPeople> superPeopleList = superPeopleService.listAll();
         Assertions.assertNotNull(superPeopleList);
     }
-
-     */
 }
 

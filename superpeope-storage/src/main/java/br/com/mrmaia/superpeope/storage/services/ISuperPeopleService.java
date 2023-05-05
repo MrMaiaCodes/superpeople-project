@@ -8,4 +8,6 @@ import java.util.List;
 public interface ISuperPeopleService extends IService<SuperPeople>{
 
     public List<SuperPeople> findSuperPeopleByName(String name) throws SuperPeopleNotFoundException;
+
+    List<SuperPeople> listAll();
 }

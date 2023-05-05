@@ -32,6 +32,7 @@ public class SuperPeopleService implements ISuperPeopleService {
             TotalBattleAttributesOverThirtyException, BattleAttributeWithValueZeroException {
         log.info("initialized SuperPeopleService.save");
         newSuperPeopleValidator(superPeople);
+        log.info("save successful");
         return superPeopleRepository.save(superPeople);
     }
 
@@ -56,10 +57,16 @@ public class SuperPeopleService implements ISuperPeopleService {
         log.info("initialized SuperPeopleService.findSuperPeopleByName");
         var heroFind = superPeopleRepository.findSuperPeopleByName(name);
         SuperPeopleUtil.superPeopleFoundVerifier(name);
+        log.info("find successful");
         return heroFind;
     }
 
-
+    @Override
+    public List<SuperPeople> listAll() {
+        log.info("initialized SuperPeopleService.listAll");
+        log.info("listAll complete");
+        return superPeopleRepository.findAll();
+    }
 
 
 }
