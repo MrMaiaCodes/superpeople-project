@@ -34,13 +34,13 @@ public class SuperPeople {
     private List<SuperPower> superPowers;
 
     @Column(name = "DS_LEVEL")
-    private Long level;
+    private Long level = 1L;
 
     @Column(name = "DS_CURRENTEXPERIENCE")
     private Long currentExperience;
 
     @Column(name = "DS_NEXTLEVELEXPERIENCE")
-    private Long nextLevelExperience;
+    private Long nextLevelExperience = 100L;
 
     @Column(name = "DS_TYPE")
     private String type;
@@ -66,4 +66,8 @@ public class SuperPeople {
     public Long getId() { return id; }
 
     public void setId(long id) { this.id = id; }
+
+    public SuperPeople incrementLevel(SuperPeople superPeople) {
+        return superPeople.builder().level(this.level + 1).build();
+    }
 }

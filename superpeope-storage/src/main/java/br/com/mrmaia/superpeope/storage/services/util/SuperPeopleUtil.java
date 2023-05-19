@@ -3,8 +3,7 @@ package br.com.mrmaia.superpeope.storage.services.util;
 import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
 import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
 import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
-import br.com.mrmaia.superpeope.storage.exceptions.TotalBattleAttributesOverThirtyException;
-import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
+import br.com.mrmaia.superpeope.storage.exceptions.ExcessiveTotalBattleAttributesException;
 
 import java.util.Arrays;
 
@@ -26,13 +25,14 @@ public class SuperPeopleUtil {
     public static void superPeopleFoundVerifier(String name) throws SuperPeopleNotFoundException {
         if (!StringUtil.validateStringIsNotNullOrBlank(name)) {
             throw new SuperPeopleNotFoundException("S04", "not found");
+            //change this so that it checks for heroFind, and checks whether it is present in the List<>
         }
     }
 
     public static void superPeopleTotalAttributeValueVerifier(Long totalAttributes, Long reference)
-            throws TotalBattleAttributesOverThirtyException {
+            throws ExcessiveTotalBattleAttributesException {
         if (totalAttributes > reference) {
-            throw new TotalBattleAttributesOverThirtyException(
+            throw new ExcessiveTotalBattleAttributesException(
                     "S02", "Total battle attributes must not exceed 30.");
         }
     }
@@ -49,6 +49,11 @@ public class SuperPeopleUtil {
                     "S03", "All battle attributes must have a value of at least 1.");
         }
     }
+
+
+
+
+
 
 
 }

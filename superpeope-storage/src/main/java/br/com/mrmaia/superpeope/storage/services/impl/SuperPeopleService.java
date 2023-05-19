@@ -3,11 +3,10 @@ package br.com.mrmaia.superpeope.storage.services.impl;
 import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
 import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
 import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
-import br.com.mrmaia.superpeope.storage.exceptions.TotalBattleAttributesOverThirtyException;
+import br.com.mrmaia.superpeope.storage.exceptions.ExcessiveTotalBattleAttributesException;
 import br.com.mrmaia.superpeope.storage.repositories.ISuperPeopleRepository;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import br.com.mrmaia.superpeope.storage.services.ISuperPeopleService;
-import br.com.mrmaia.superpeope.storage.services.ISuperPowerService;
 import br.com.mrmaia.superpeope.storage.services.util.SuperPeopleUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +23,10 @@ public class SuperPeopleService implements ISuperPeopleService {
     @Autowired
     private ISuperPeopleRepository superPeopleRepository;
 
-    @Autowired
-    private ISuperPowerService superPowerService;
 
     @Override
     public SuperPeople save(SuperPeople superPeople) throws InvalidNameException,
-            TotalBattleAttributesOverThirtyException, BattleAttributeWithValueZeroException {
+            ExcessiveTotalBattleAttributesException, BattleAttributeWithValueZeroException {
         log.info("initialized SuperPeopleService.save");
         newSuperPeopleValidator(superPeople);
         log.info("save successful");
@@ -37,7 +34,7 @@ public class SuperPeopleService implements ISuperPeopleService {
     }
 
     private void newSuperPeopleValidator(SuperPeople superPeople) throws InvalidNameException,
-            TotalBattleAttributesOverThirtyException, BattleAttributeWithValueZeroException {
+            ExcessiveTotalBattleAttributesException, BattleAttributeWithValueZeroException {
         SuperPeopleUtil.superPeopleNameNullVerifier(superPeople.getName());
         SuperPeopleUtil.superPeopleTotalAttributeValueVerifier(
                 SuperPeopleUtil.attributeSum(
@@ -53,10 +50,70 @@ public class SuperPeopleService implements ISuperPeopleService {
         );
     }
 
-    public List<SuperPeople> findSuperPeopleByName(String name) throws SuperPeopleNotFoundException {
+    private void levelUpValidator(SuperPeople superPeople, Long newLevel)
+            throws ExcessiveTotalBattleAttributesException, BattleAttributeWithValueZeroException {
+        SuperPeopleUtil.superPeopleTotalAttributeValueVerifier(
+                SuperPeopleUtil.attributeSum(
+                        superPeople.getStrength(), superPeople.getConstitution(),
+                        superPeople.getDexterity(), superPeople.getIntelligence(),
+                        superPeople.getWisdom(), superPeople.getCharisma()
+                ), newLevel
+        );
+        SuperPeopleUtil.superPeopleNoZeroValuesVerifier(
+                superPeople.getStrength(), superPeople.getConstitution(),
+                superPeople.getDexterity(), superPeople.getIntelligence(),
+                superPeople.getWisdom(), superPeople.getCharisma()
+        );
+    }
+
+    private Long pointAdder(Long number) {
+        return TOTAL_BATTLE_ATTRIBUTES + ((number * 5) - 5);
+    }
+
+    @Override
+    public SuperPeople xpAndLevelApplier(SuperPeople superPeople, Long xpGained)
+            throws SuperPeopleNotFoundException {
+        log.info("initialized xpAndLevelApplier");
+        log.info("executing xpAndLevelApplier");
+        xpAdder(superPeople, xpGained);
+        nextLevelCalculator(superPeople);
+        log.info("successfully concluded xpAndLevelApplier");
+        return superPeople;
+    }
+
+    private SuperPeople xpAdder(SuperPeople superPeople, Long xpGained)
+            throws SuperPeopleNotFoundException {
+        log.info("initialized superPeopleService.xpAdder");
+        var heroToEvolve = superPeopleRepository.findById(superPeople.getId())
+                .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found"));
+        log.info("executing xpAdder");
+        heroToEvolve.setCurrentExperience(superPeople.getCurrentExperience() + xpGained);
+        nextLevelCalculator(heroToEvolve);
+        log.info("successfully finished xpAdder");
+        return heroToEvolve;
+
+    }
+    private void nextLevelCalculator(SuperPeople superPeople) {
+        log.info("initialized superPeopleService.nextLevelCalculator");
+        if (superPeople.getCurrentExperience() >= superPeople.getNextLevelExperience()) {
+            superPeople.incrementLevel(superPeople);
+            Long extraXp = superPeople.getCurrentExperience() - superPeople.getNextLevelExperience();
+            superPeople.setCurrentExperience(superPeople.getNextLevelExperience());
+            superPeople.setNextLevelExperience(superPeople.getCurrentExperience()
+                    +(superPeople.getLevel() * 100));
+            superPeople.setCurrentExperience(extraXp);
+        }
+        log.info("successfully completed nextLevelCalculator");
+    }
+
+
+
+    @Override
+    public List<SuperPeople> findSuperPeopleByName(SuperPeople superPeople)
+            throws SuperPeopleNotFoundException {
         log.info("initialized SuperPeopleService.findSuperPeopleByName");
-        var heroFind = superPeopleRepository.findSuperPeopleByName(name);
-        SuperPeopleUtil.superPeopleFoundVerifier(name);
+        var heroFind = superPeopleRepository.findSuperPeopleByName(superPeople.getName());
+        SuperPeopleUtil.superPeopleFoundVerifier(superPeople.getName());
         log.info("find successful");
         return heroFind;
     }
@@ -68,35 +125,39 @@ public class SuperPeopleService implements ISuperPeopleService {
         return superPeopleRepository.findAll();
     }
 
+    //change this so every time the person levels up they get an extra 5 points to place as they choose
     @Override
-    public SuperPeople update(SuperPeople superPeople) throws SuperPeopleNotFoundException,
-            InvalidNameException, BattleAttributeWithValueZeroException,
-            TotalBattleAttributesOverThirtyException {
+    public SuperPeople update(SuperPeople superPeople) throws SuperPeopleNotFoundException {
         log.info("initialized SuperPeopleService.update");
         var heroFind = superPeopleRepository.findById(superPeople.getId())
                 .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found")
                 );
         log.info("processing update");
-        heroFind.setStrength(superPeople.getStrength());
-        heroFind.setConstitution(superPeople.getConstitution());
-        heroFind.setCharisma(superPeople.getCharisma());
-        heroFind.setDexterity(superPeople.getDexterity());
-        heroFind.setIntelligence(superPeople.getIntelligence());
-        heroFind.setWisdom(superPeople.getWisdom());
+        heroFind.setName(superPeople.getName());
+        heroFind.setPlanet(superPeople.getPlanet());
+        heroFind.setType(superPeople.getType());
 
-        newSuperPeopleValidator(heroFind);
         log.info("update complete");
         return superPeopleRepository.save(heroFind);
     }
 
+    ///private Long pointAdder(Long number) {
+//        return TOTAL_BATTLE_ATTRIBUTES + ((number*5)-5);
+//    }
+
+
     @Override
     public void delete(SuperPeople superPeople) throws SuperPeopleNotFoundException {
-        log.info("initialized equipmentService.delete");
+        log.info("initialized superPeopleService.delete");
         var heroDelete = superPeopleRepository.findById(
                 superPeople.getId()).orElseThrow(() -> new SuperPeopleNotFoundException(
-                        "S04", "not found"));
-                log.info("processing delete");
-                superPeopleRepository.delete(heroDelete);
-                log.info("delete completed");
+                "S04", "not found"));
+        log.info("processing delete");
+        superPeopleRepository.delete(heroDelete);
+        log.info("delete completed");
     }
+
+
+
+
 }

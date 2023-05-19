@@ -2,10 +2,7 @@ package br.com.mrmaia.superpeope.storage.handdlers;
 
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.errors.ErrorResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.errors.ErrorSpecificationDTO;
-import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
-import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
-import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
-import br.com.mrmaia.superpeope.storage.exceptions.TotalBattleAttributesOverThirtyException;
+import br.com.mrmaia.superpeope.storage.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +26,10 @@ public class ApplicationExceptionHandler {
                         .build());
     }
 
-    @ExceptionHandler(TotalBattleAttributesOverThirtyException.class)
+    @ExceptionHandler(ExcessiveTotalBattleAttributesException.class)
     public ResponseEntity<ErrorResponseDTO> TotalBattleAttributesOverThirtyExceptionHandler(
-            TotalBattleAttributesOverThirtyException exception) {
-        log.info("Total battle attributes must not exceed 30.");
+            ExcessiveTotalBattleAttributesException exception, Long maxNumber) {
+        log.info("excessive attribute total");
 
         return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
                 .body(ErrorResponseDTO.builder()
@@ -60,6 +57,20 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(SuperPeopleNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> SuperPeopleNotFoundExceptionHandler(
             SuperPeopleNotFoundException exception) {
+        log.info("not found");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.builder()
+                        .data(ErrorSpecificationDTO.builder()
+                                .errorCode("404")
+                                .errorMessage(exception.getMessage())
+                                .build())
+                        .build());
+    }
+
+    @ExceptionHandler(SuperPowerNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> SuperPowerNotFoundExceptionHandler(
+            SuperPowerNotFoundException exception) {
         log.info("not found");
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

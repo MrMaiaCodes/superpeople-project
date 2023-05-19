@@ -1,12 +1,12 @@
 package br.com.mrmaia.superpeope.storage.exceptions;
 
-public class TotalBattleAttributesOverThirtyException extends Exception {
+public class ExcessiveTotalBattleAttributesException extends Exception {
 
     private String code;
 
     private String message;
 
-    public TotalBattleAttributesOverThirtyException(String code, String message) {
+    public ExcessiveTotalBattleAttributesException(String code, String message) {
         super(message);
         this.code = code;
     }

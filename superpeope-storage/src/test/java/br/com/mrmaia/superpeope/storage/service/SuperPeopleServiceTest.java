@@ -1,11 +1,8 @@
 package br.com.mrmaia.superpeope.storage.service;
 
-import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
+import br.com.mrmaia.superpeope.storage.exceptions.*;
 import br.com.mrmaia.superpeope.storage.services.ISuperPowerService;
 import br.com.mrmaia.superpeope.storage.services.impl.SuperPeopleService;
-import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
-import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
-import br.com.mrmaia.superpeope.storage.exceptions.TotalBattleAttributesOverThirtyException;
 import br.com.mrmaia.superpeope.storage.repositories.ISuperPeopleRepository;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPower;
@@ -21,7 +18,6 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class SuperPeopleServiceTest {
@@ -46,7 +42,7 @@ public class SuperPeopleServiceTest {
 
     @Test
     void testSaveSuccess()
-            throws InvalidNameException, TotalBattleAttributesOverThirtyException,
+            throws InvalidNameException, ExcessiveTotalBattleAttributesException,
             BattleAttributeWithValueZeroException {
         when(superPeopleRepository.save(any())).thenReturn(SuperPeople.builder().id(1L).build());
         SuperPeople result = superPeopleService.save(
@@ -61,8 +57,8 @@ public class SuperPeopleServiceTest {
     }
 
     @Test
-    void testSaveInvalidNameExceptionError()
-            throws InvalidNameException, TotalBattleAttributesOverThirtyException,
+    void testSaveEmptyNameExceptionError()
+            throws InvalidNameException, ExcessiveTotalBattleAttributesException,
             BattleAttributeWithValueZeroException {
         InvalidNameException thrown = Assertions.assertThrows(InvalidNameException.class, () -> {
             superPeopleService.save(
@@ -79,12 +75,30 @@ public class SuperPeopleServiceTest {
         Assertions.assertEquals("invalid name", thrown.getMessage());
     }
 
+
     @Test
-    void testSaveTotalBattleAttributesOverThirtyExceptionError()
-            throws InvalidNameException, TotalBattleAttributesOverThirtyException,
+    void testSaveNullNameError() throws InvalidNameException, ExcessiveTotalBattleAttributesException,
             BattleAttributeWithValueZeroException {
-        TotalBattleAttributesOverThirtyException thrown = Assertions.assertThrows(
-                TotalBattleAttributesOverThirtyException.class, () -> {
+        InvalidNameException thrown = Assertions.assertThrows(InvalidNameException.class, () -> {
+            superPeopleService.save(SuperPeople.builder()
+                    .name(null).level(1L).currentExperience(1L)
+                    .nextLevelExperience(1L).planet("Big Planet")
+                    .superPowers(List.of(SuperPower.builder().id(1L).build()))
+                    .type("hero").strength(5L).constitution(5L).dexterity(5L)
+                    .intelligence(5L).wisdom(5L).charisma(5L)
+                    .build());
+        });
+        Assertions.assertEquals("S01", thrown.getCode());
+        Assertions.assertEquals("invalid name", thrown.getMessage());
+    }
+
+
+    @Test
+    void testSaveExcessiveTotalBattleAttributesExceptionError()
+            throws InvalidNameException, ExcessiveTotalBattleAttributesException,
+            BattleAttributeWithValueZeroException {
+        ExcessiveTotalBattleAttributesException thrown = Assertions.assertThrows(
+                ExcessiveTotalBattleAttributesException.class, () -> {
                     superPeopleService.save(SuperPeople.builder()
                             .name("Big Man").level(1L).currentExperience(1L)
                             .nextLevelExperience(1L).planet("Big Planet")
@@ -100,7 +114,7 @@ public class SuperPeopleServiceTest {
 
     @Test
     void testBattleAttributeWithValueZeroExceptionError()
-            throws InvalidNameException, TotalBattleAttributesOverThirtyException,
+            throws InvalidNameException, ExcessiveTotalBattleAttributesException,
             BattleAttributeWithValueZeroException {
         BattleAttributeWithValueZeroException thrown = Assertions.assertThrows(
                 BattleAttributeWithValueZeroException.class, () -> {
@@ -120,7 +134,7 @@ public class SuperPeopleServiceTest {
 
     @Test
     void findSuperPeopleByNameSuccess() throws SuperPeopleNotFoundException {
-        when(superPeopleRepository.findSuperPeopleByName(anyString()))
+        when(superPeopleRepository.findSuperPeopleByName(any()))
                 .thenReturn(List.of(
                                 SuperPeople.builder()
                                         .name("Big Man").level(1L).currentExperience(1L)
@@ -131,17 +145,30 @@ public class SuperPeopleServiceTest {
                                         .build()
                         )
                 );
-        List<SuperPeople> superPeopleFound = superPeopleService.findSuperPeopleByName("Big Man");
+        List<SuperPeople> superPeopleFound = superPeopleService.findSuperPeopleByName(
+                SuperPeople.builder()
+                        .name("Big Man").level(1L).currentExperience(1L)
+                        .nextLevelExperience(1L).planet("Big Planet")
+                        .superPowers(List.of(SuperPower.builder().id(1L).build()))
+                        .type("hero").strength(5L).constitution(5L).dexterity(5L)
+                        .intelligence(5L).wisdom(5L).charisma(5L)
+                        .build());
         Assertions.assertNotNull(superPeopleFound);
     }
 
     @Test
     void findSuperPeopleByNameSuperPeopleNotFoundExceptionError()
             throws SuperPeopleNotFoundException {
-        when(superPeopleRepository.findSuperPeopleByName(anyString())).thenReturn(null);
+        when(superPeopleRepository.findSuperPeopleByName(any())).thenReturn(null);
         SuperPeopleNotFoundException thrown = Assertions.assertThrows(
                 SuperPeopleNotFoundException.class, () -> {
-                    superPeopleService.findSuperPeopleByName("");
+                    superPeopleService.findSuperPeopleByName(SuperPeople.builder()
+                            .name("").level(1L).currentExperience(1L)
+                            .nextLevelExperience(1L).planet("Big Planet")
+                            .superPowers(List.of(SuperPower.builder().id(1L).build()))
+                            .type("hero").strength(5L).constitution(5L).dexterity(5L)
+                            .intelligence(5L).wisdom(5L).charisma(5L)
+                            .build());
                 }
         );
         Assertions.assertEquals("S04", thrown.getCode());
@@ -153,56 +180,6 @@ public class SuperPeopleServiceTest {
         when(superPeopleRepository.findAll()).thenReturn(List.of());
         List<SuperPeople> superPeopleList = superPeopleService.listAll();
         Assertions.assertNotNull(superPeopleList);
-    }
-
-    @Test
-    void testUpdateSuccess() throws SuperPeopleNotFoundException, InvalidNameException,
-            BattleAttributeWithValueZeroException, TotalBattleAttributesOverThirtyException {
-        when(superPeopleRepository.findById(any())).thenReturn(Optional.of(SuperPeople.builder()
-                        .name("Big Man").level(1L).currentExperience(1L)
-                        .nextLevelExperience(1L).planet("Big Planet")
-                        .superPowers(List.of(SuperPower.builder().id(1L).build()))
-                        .type("hero").strength(5L).constitution(5L).dexterity(5L)
-                        .intelligence(5L).wisdom(5L).charisma(5L)
-                        .build()
-                )
-        );
-        when(superPeopleRepository.save(any(SuperPeople.class))).thenReturn(
-                SuperPeople.builder()
-                        .name("Big Man").level(1L).currentExperience(1L)
-                        .nextLevelExperience(1L).planet("Big Planet")
-                        .superPowers(List.of(SuperPower.builder().id(1L).build()))
-                        .type("hero").strength(5L).constitution(5L).dexterity(5L)
-                        .intelligence(5L).wisdom(5L).charisma(5L)
-                        .build()
-        );
-        SuperPeople result = superPeopleService.update(
-                SuperPeople.builder()
-                        .name("Big Man").level(1L).currentExperience(1L)
-                        .nextLevelExperience(1L).planet("Big Planet")
-                        .superPowers(List.of(SuperPower.builder().id(1L).build()))
-                        .type("hero").strength(5L).constitution(5L).dexterity(5L)
-                        .intelligence(5L).wisdom(5L).charisma(5L)
-                        .build()
-        );
-        Assertions.assertNotNull(result);
-    }
-
-    @Test
-    void testUpdateSuperPersonNotFoundExceptionError() throws SuperPeopleNotFoundException,
-            InvalidNameException, BattleAttributeWithValueZeroException,
-            TotalBattleAttributesOverThirtyException {
-        when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
-        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
-                () -> {superPeopleService.update(SuperPeople.builder()
-                        .name("Big Man").level(1L).currentExperience(1L)
-                        .nextLevelExperience(1L).planet("Big Planet")
-                        .superPowers(List.of(SuperPower.builder().id(1L).build()))
-                        .type("hero").strength(5L).constitution(5L).dexterity(5L)
-                        .intelligence(5L).wisdom(5L).charisma(5L).build());
-        });
-        Assertions.assertEquals("S04", thrown.getCode());
-        Assertions.assertEquals("not found", thrown.getMessage());
     }
 
     @Test
@@ -241,5 +218,45 @@ public class SuperPeopleServiceTest {
         Assertions.assertEquals("S04", thrown.getCode());
         Assertions.assertEquals("not found", thrown.getMessage());
     }
+
+
+    @Test
+    void testUpdateSuccess() throws SuperPeopleNotFoundException, InvalidNameException,
+            BattleAttributeWithValueZeroException, ExcessiveTotalBattleAttributesException {
+        when(superPeopleRepository.findById(any())).thenReturn(Optional.of(SuperPeople.builder()
+                        .name("Big Man").level(1L).currentExperience(1L)
+                        .nextLevelExperience(1L).planet("Big Planet")
+                        .superPowers(List.of(SuperPower.builder().id(1L).build()))
+                        .type("hero").strength(5L).constitution(5L).dexterity(5L)
+                        .intelligence(5L).wisdom(5L).charisma(5L)
+                        .build()
+                )
+        );
+        when(superPeopleRepository.save(any(SuperPeople.class))).thenReturn(
+                SuperPeople.builder()
+                        .name("Big Man").planet("Big Planet").type("Hero")
+                        .build()
+        );
+        SuperPeople result = superPeopleService.update(
+                SuperPeople.builder()
+                        .name("Big Man").planet("Big Planet").type("Hero")
+                        .build()
+        );
+        Assertions.assertNotNull(result);
+    }
+
+    @Test
+    void testUpdateSuperPersonNotFoundExceptionError() throws SuperPeopleNotFoundException {
+        when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
+        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
+                () -> {
+                    superPeopleService.update(SuperPeople.builder()
+                            .name("Big Man").planet("Big Planet").type("Hero").build());
+                });
+        Assertions.assertEquals("S04", thrown.getCode());
+        Assertions.assertEquals("not found", thrown.getMessage());
+    }
+
+
 }
 
