@@ -71,24 +71,22 @@ public class SuperPeopleService implements ISuperPeopleService {
     }
 
     @Override
-    public SuperPeople xpAndLevelApplier(SuperPeople superPeople, Long xpGained)
+    public SuperPeople experienceAndLevelApplier(SuperPeople superPeople, Long xpGained)
             throws SuperPeopleNotFoundException {
         log.info("initialized xpAndLevelApplier");
-        log.info("executing xpAndLevelApplier");
-        xpAdder(superPeople, xpGained);
+        experienceAdder(superPeople, xpGained);
         nextLevelCalculator(superPeople);
         log.info("successfully concluded xpAndLevelApplier");
         return superPeople;
     }
 
-    private SuperPeople xpAdder(SuperPeople superPeople, Long xpGained)
+    private SuperPeople experienceAdder(SuperPeople superPeople, Long xpGained)
             throws SuperPeopleNotFoundException {
         log.info("initialized superPeopleService.xpAdder");
         var heroToEvolve = superPeopleRepository.findById(superPeople.getId())
                 .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found"));
         log.info("executing xpAdder");
         heroToEvolve.setCurrentExperience(superPeople.getCurrentExperience() + xpGained);
-        nextLevelCalculator(heroToEvolve);
         log.info("successfully finished xpAdder");
         return heroToEvolve;
 
@@ -98,8 +96,7 @@ public class SuperPeopleService implements ISuperPeopleService {
         if (superPeople.getCurrentExperience() >= superPeople.getNextLevelExperience()) {
             superPeople.incrementLevel(superPeople);
             Long extraXp = superPeople.getCurrentExperience() - superPeople.getNextLevelExperience();
-            superPeople.setCurrentExperience(superPeople.getNextLevelExperience());
-            superPeople.setNextLevelExperience(superPeople.getCurrentExperience()
+            superPeople.setNextLevelExperience(superPeople.getNextLevelExperience()
                     +(superPeople.getLevel() * 100));
             superPeople.setCurrentExperience(extraXp);
         }
