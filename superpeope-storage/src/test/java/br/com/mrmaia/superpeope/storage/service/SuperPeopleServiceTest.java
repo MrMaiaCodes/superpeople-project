@@ -266,10 +266,32 @@ public class SuperPeopleServiceTest {
     //        return superPeople;
     //    }
     @Test
-    void testExperienceAndLevelApplierExceptionError() throws SuperPeopleNotFoundException {
+    void testExperienceAndLevelApplierSuccess() throws InvalidNameException, SuperPeopleNotFoundException {
         var heroTested = SuperPeopleBuilder.superPeopleSuccessBuilder();
         when(superPeopleRepository.findById(1L)).thenReturn(Optional.of(heroTested));
         superPeopleService.experienceAndLevelApplier(heroTested, 100L);
+    }
+
+    //void testUpdateSuperPersonNotFoundExceptionError() throws SuperPeopleNotFoundException {
+    //        when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
+    //        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
+    //                () -> {
+    //                    superPeopleService.update(SuperPeople.builder()
+    //                            .name("Big Man").planet("Big Planet").type("Hero").build());
+    //                });
+    //        Assertions.assertEquals("S04", thrown.getCode());
+    //        Assertions.assertEquals("not found", thrown.getMessage());
+    //    }
+    @Test
+    void testExperienceAndLevelApplierSuperPeopleNotFoundExceptionError()
+            throws SuperPeopleNotFoundException {
+        var heroTested = SuperPeopleBuilder.superPeopleSuccessBuilder();
+        when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
+        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
+                () ->{superPeopleService.experienceAndLevelApplier(heroTested, 50L);
+        });
+        Assertions.assertEquals("S04", thrown.getCode());
+        Assertions.assertEquals("not found", thrown.getMessage());
     }
 
 

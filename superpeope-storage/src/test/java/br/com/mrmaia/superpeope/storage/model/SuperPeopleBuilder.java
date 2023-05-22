@@ -19,4 +19,18 @@ public class SuperPeopleBuilder {
                 .nextLevelExperience(2L).charisma(5L).intelligence(5L).dexterity(5L)
                 .strength(5L).wisdom(5L).constitution(5L).superPowers(List.of()).build();
     }
+
+    public static SuperPeople superPeopleExcessiveTotalBattleAttributesExceptionErrorBuilder() {
+        return SuperPeople.builder()
+                .id(1L).name("Big Dude").planet("Zion").type("Hero").level(1L).currentExperience(1L)
+                .nextLevelExperience(2L).charisma(7L).intelligence(5L).dexterity(5L)
+                .strength(5L).wisdom(5L).constitution(5L).superPowers(List.of()).build();
+    }
+
+    public static SuperPeople superPeopleBattleAttributeWithValueZeroExceptionErrorBuilder() {
+        return SuperPeople.builder()
+                .id(1L).name("Big Dude").planet("Zion").type("Hero").level(1L).currentExperience(1L)
+                .nextLevelExperience(2L).charisma(5L).intelligence(0L).dexterity(5L)
+                .strength(5L).wisdom(5L).constitution(5L).superPowers(List.of()).build();
+    }
 }
