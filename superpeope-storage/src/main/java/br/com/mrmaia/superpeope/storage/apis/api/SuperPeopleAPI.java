@@ -46,4 +46,14 @@ public class SuperPeopleAPI {
                         )
                 ).build();
     }
+
+    @GetMapping("/list")
+    public SuperPeopleListResponseDTO listAll() {
+        return SuperPeopleListResponseDTO.builder()
+                .data(
+                        SuperPeopleDTOAdapter.convertToList(
+                                superPeopleService.listAll()
+                        )
+                ).build();
+    }
 }

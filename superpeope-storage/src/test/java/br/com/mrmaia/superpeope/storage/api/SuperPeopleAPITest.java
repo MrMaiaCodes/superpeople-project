@@ -49,21 +49,7 @@ public class SuperPeopleAPITest {
 
         Assertions.assertNotNull(result);
     }
-/*
-    @Test
-    void testAddSuperPeopleNotFoundExceptionError() throws InvalidNameException,
-            BattleAttributeWithValueZeroException, ExcessiveTotalBattleAttributesException {
-        var heroAddedDTO = SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder();
-        when(superPeopleService.save(any()))
-                .thenThrow(new SuperPeopleNotFoundException("S01", "not found"));
-        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
-                () -> {
-                    superPeopleAPI.add(heroAddedDTO);
-                });
-        Assertions.assertEquals("S01", thrown.getCode());
-        Assertions.assertEquals("not found", thrown.getMessage());
-    }
-*/
+
     @Test
     void testAddInvalidNameExceptionError() throws InvalidNameException,
             BattleAttributeWithValueZeroException, ExcessiveTotalBattleAttributesException {
@@ -124,5 +110,15 @@ public class SuperPeopleAPITest {
                 () -> {superPeopleAPI.find("Big Man");});
         Assertions.assertEquals("S01", thrown.getCode());
         Assertions.assertEquals("not found", thrown.getMessage());
+    }
+
+    @Test
+    void testListAllSuccess(){
+        var heroFind = SuperPeopleBuilder.superPeopleSuccessBuilder();
+        var heroFind2 = SuperPeopleBuilder.superPeopleSuccessBuilder2();
+        when(superPeopleService.listAll()).thenReturn(List.of(heroFind, heroFind2));
+        SuperPeopleListResponseDTO result = superPeopleAPI.listAll();
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.getData().size());
     }
 }
