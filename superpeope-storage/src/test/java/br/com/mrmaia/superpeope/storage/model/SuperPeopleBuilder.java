@@ -19,7 +19,12 @@ public class SuperPeopleBuilder {
                 .nextLevelExperience(2L).charisma(5L).intelligence(5L).dexterity(5L)
                 .strength(5L).wisdom(5L).constitution(5L).superPowers(List.of()).build();
     }
-
+/*
+    public static SuperPeople superPeopleUpdateBuilder() {
+        return SuperPeople.builder()
+                .id(1L).name("Big Dude").planet("Zion").type("Hero").build();
+    }
+*/
     public static SuperPeople superPeopleInvalidNameExceptionErrorBuilder() {
         return SuperPeople.builder()
                 .id(1L).name("").planet("Zion").type("Hero").level(1L).currentExperience(1L)

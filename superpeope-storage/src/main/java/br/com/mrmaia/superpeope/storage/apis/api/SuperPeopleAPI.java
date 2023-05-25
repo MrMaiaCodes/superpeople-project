@@ -3,6 +3,7 @@ package br.com.mrmaia.superpeope.storage.apis.api;
 import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleAdapter;
 import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleDTOAdapter;
 import br.com.mrmaia.superpeope.storage.apis.dto.requests.SuperPeopleDTO;
+import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.DeleteResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleListResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleResponseDTO;
 import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
@@ -11,7 +12,9 @@ import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
 import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import br.com.mrmaia.superpeope.storage.services.ISuperPeopleService;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,5 +58,28 @@ public class SuperPeopleAPI {
                                 superPeopleService.listAll()
                         )
                 ).build();
+    }
+
+    @PutMapping("/change/{name}")
+    public SuperPeopleResponseDTO update(@RequestBody SuperPeopleDTO superPeopleDTO)
+        throws SuperPeopleNotFoundException, InvalidNameException {
+        return SuperPeopleResponseDTO.builder()
+                .data(
+                        SuperPeopleDTOAdapter.convertTo(
+                                superPeopleService.update(
+                                        SuperPeopleAdapter.convertTo(superPeopleDTO)
+                                )
+                        )
+                ).build();
+    }
+
+    @DeleteMapping("/{superPeopleId}")
+    public ResponseEntity<DeleteResponseDTO> delete(@PathVariable("superPeopleId") long superPeopleId)
+        throws SuperPeopleNotFoundException {
+        superPeopleService.delete(SuperPeople.builder().id(superPeopleId).build());
+
+        return ResponseEntity.ok(DeleteResponseDTO.builder()
+                .deleteSuccessMessage("SuperPerson successfully deleted")
+                .build());
     }
 }

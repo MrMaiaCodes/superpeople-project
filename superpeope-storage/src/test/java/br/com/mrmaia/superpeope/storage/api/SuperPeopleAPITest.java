@@ -10,6 +10,7 @@ import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
 import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
 import br.com.mrmaia.superpeope.storage.model.SuperPeopleBuilder;
 import br.com.mrmaia.superpeope.storage.model.SuperPeopleDTOBuilder;
+import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import br.com.mrmaia.superpeope.storage.services.ISuperPeopleService;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.Assertions;
@@ -21,9 +22,10 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class SuperPeopleAPITest {
 
@@ -121,4 +123,56 @@ public class SuperPeopleAPITest {
         Assertions.assertNotNull(result);
         Assertions.assertEquals(2, result.getData().size());
     }
+
+    @Test
+    void testUpdateSuccess() throws SuperPeopleNotFoundException, InvalidNameException {
+        var heroFind = SuperPeopleBuilder.superPeopleSuccessBuilder();
+        var heroFindDTO = SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder();
+        when(superPeopleService.update(any())).thenReturn(heroFind);
+        SuperPeopleResponseDTO result = superPeopleAPI.update(heroFindDTO);
+        Assertions.assertNotNull(result);
+    }
+
+    @Test
+    void testUpdateSuperPeopleNotFoundExceptionError()
+            throws SuperPeopleNotFoundException, InvalidNameException {
+        var heroFindDTO = SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder();
+        when(superPeopleService.update(any()))
+                .thenThrow(new SuperPeopleNotFoundException("S01", "not found"));
+        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
+        () -> {superPeopleAPI.update(heroFindDTO);});
+        Assertions.assertEquals("S01", thrown.getCode());
+        Assertions.assertEquals("not found", thrown.getMessage());
+    }
+
+    @Test
+    void testUpdateInvalidNameExceptionError() throws SuperPeopleNotFoundException, InvalidNameException {
+        var heroDeleted = SuperPeopleDTOBuilder.superPeopleDTOInvalidNameExceptionErrorBuilder();
+        when(superPeopleService.update(any()))
+                .thenThrow(new InvalidNameException("S02", "invalid name"));
+        InvalidNameException thrown = Assertions.assertThrows(InvalidNameException.class, () -> {
+            superPeopleAPI.update(heroDeleted);
+        });
+        Assertions.assertEquals("S02", thrown.getCode());
+        Assertions.assertEquals("invalid name", thrown.getMessage());
+    }
+
+    @Test
+    void testDeleteSuccess() throws SuperPeopleNotFoundException {
+        var heroDelete = SuperPeopleBuilder.superPeopleSuccessBuilder();
+        doNothing().when(superPeopleService).delete(heroDelete);
+        assertDoesNotThrow(() -> superPeopleAPI.delete(1L));
+    }
+
+    @Test
+    void testDeleteSuperPeopleNotFoundExceptionError() throws SuperPeopleNotFoundException {
+        doThrow(new SuperPeopleNotFoundException("S01", "not found"))
+                .when(superPeopleService).delete(SuperPeople.builder().id(1L).build());
+        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
+                () -> {superPeopleAPI.delete(1L);});
+        Assertions.assertEquals("S01", thrown.getCode());
+        Assertions.assertEquals("not found", thrown.getMessage());
+    }
+
+
 }
