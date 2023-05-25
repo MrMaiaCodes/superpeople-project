@@ -146,30 +146,17 @@ public class SuperPeopleServiceTest {
                                         .build()
                         )
                 );
-        List<SuperPeople> superPeopleFound = superPeopleService.findSuperPeopleByName(
-                SuperPeople.builder()
-                        .name("Big Man").level(1L).currentExperience(1L)
-                        .nextLevelExperience(1L).planet("Big Planet")
-                        .superPowers(List.of(SuperPower.builder().id(1L).build()))
-                        .type("hero").strength(5L).constitution(5L).dexterity(5L)
-                        .intelligence(5L).wisdom(5L).charisma(5L)
-                        .build());
+        List<SuperPeople> superPeopleFound = superPeopleService.findSuperPeopleByName("Big Man");
         Assertions.assertNotNull(superPeopleFound);
     }
 
     @Test
     void findSuperPeopleByNameSuperPeopleNotFoundExceptionError()
             throws SuperPeopleNotFoundException {
-        when(superPeopleRepository.findSuperPeopleByName(any())).thenReturn(null);
+        when(superPeopleRepository.findSuperPeopleByName(any())).thenReturn(List.of());
         SuperPeopleNotFoundException thrown = Assertions.assertThrows(
                 SuperPeopleNotFoundException.class, () -> {
-                    superPeopleService.findSuperPeopleByName(SuperPeople.builder()
-                            .name("").level(1L).currentExperience(1L)
-                            .nextLevelExperience(1L).planet("Big Planet")
-                            .superPowers(List.of(SuperPower.builder().id(1L).build()))
-                            .type("hero").strength(5L).constitution(5L).dexterity(5L)
-                            .intelligence(5L).wisdom(5L).charisma(5L)
-                            .build());
+                    superPeopleService.findSuperPeopleByName("Big Man");
                 }
         );
         Assertions.assertEquals("S04", thrown.getCode());

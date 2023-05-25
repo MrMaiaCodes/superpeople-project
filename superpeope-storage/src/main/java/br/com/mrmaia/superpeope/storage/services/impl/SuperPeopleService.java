@@ -106,11 +106,11 @@ public class SuperPeopleService implements ISuperPeopleService {
 
 
     @Override
-    public List<SuperPeople> findSuperPeopleByName(SuperPeople superPeople)
+    public List<SuperPeople> findSuperPeopleByName(String heroName)
             throws SuperPeopleNotFoundException {
         log.info("initialized SuperPeopleService.findSuperPeopleByName");
-        var heroFind = superPeopleRepository.findSuperPeopleByName(superPeople.getName());
-        SuperPeopleUtil.superPeopleFoundVerifier(superPeople.getName());
+        var heroFind = superPeopleRepository.findSuperPeopleByName(heroName);
+        SuperPeopleUtil.superPeopleFoundVerifier(heroFind, heroName);
         log.info("find successful");
         return heroFind;
     }

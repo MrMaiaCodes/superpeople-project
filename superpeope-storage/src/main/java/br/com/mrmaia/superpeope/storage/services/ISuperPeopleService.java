@@ -11,7 +11,7 @@ public interface ISuperPeopleService extends IService<SuperPeople> {
     SuperPeople experienceAndLevelApplier(SuperPeople superPeople, Long xpGained)
             throws SuperPeopleNotFoundException;
 
-    List<SuperPeople> findSuperPeopleByName(SuperPeople superPeople) throws SuperPeopleNotFoundException;
+    List<SuperPeople> findSuperPeopleByName(String heroName) throws SuperPeopleNotFoundException;
 
 }
 

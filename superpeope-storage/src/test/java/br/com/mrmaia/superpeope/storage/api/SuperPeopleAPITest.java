@@ -2,6 +2,7 @@ package br.com.mrmaia.superpeope.storage.api;
 
 import br.com.mrmaia.superpeope.storage.apis.api.SuperPeopleAPI;
 import br.com.mrmaia.superpeope.storage.apis.dto.requests.SuperPeopleDTO;
+import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleListResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleResponseDTO;
 import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
 import br.com.mrmaia.superpeope.storage.exceptions.ExcessiveTotalBattleAttributesException;
@@ -21,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class SuperPeopleAPITest {
@@ -103,5 +105,24 @@ public class SuperPeopleAPITest {
                 });
         Assertions.assertEquals("S04", thrown.getCode());
         Assertions.assertEquals("excessive battle attributes", thrown.getMessage());
+    }
+
+    @Test
+    void testFindSuccess() throws SuperPeopleNotFoundException {
+        var heroFound = SuperPeopleBuilder.superPeopleSuccessBuilder();
+        when(superPeopleService.findSuperPeopleByName(any())).thenReturn(List.of(heroFound));
+        SuperPeopleListResponseDTO result = superPeopleAPI.find("Big Dude");
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.getData().size());
+    }
+
+    @Test
+    void testFindSuperPeopleNotFoundExceptionError() throws SuperPeopleNotFoundException {
+        when(superPeopleService.findSuperPeopleByName(any()))
+                .thenThrow(new SuperPeopleNotFoundException("S01", "not found"));
+        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
+                () -> {superPeopleAPI.find("Big Man");});
+        Assertions.assertEquals("S01", thrown.getCode());
+        Assertions.assertEquals("not found", thrown.getMessage());
     }
 }
