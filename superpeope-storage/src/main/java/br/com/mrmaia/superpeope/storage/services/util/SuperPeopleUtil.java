@@ -57,10 +57,21 @@ public class SuperPeopleUtil {
         }
     }
 
+    public static double winnerExperienceCalculator(SuperPeople superPeople) {
+        return superPeople.getCurrentExperience()+((superPeople.getLevel()*10)/1.5);
+    }
 
+    public static double loserExperienceCalculator(SuperPeople superPeople) {
+        return superPeople.getCurrentExperience()+((superPeople.getLevel()*10)/2.5);
+    }
 
+    public static void winnerExperienceAdder(SuperPeople superPeople) {
+        superPeople.setCurrentExperience(winnerExperienceCalculator(superPeople));
+    }
 
-
+    public static void loserExperienceAdder(SuperPeople superPeople) {
+        superPeople.setCurrentExperience(loserExperienceCalculator(superPeople));
+    }
 
 
 }

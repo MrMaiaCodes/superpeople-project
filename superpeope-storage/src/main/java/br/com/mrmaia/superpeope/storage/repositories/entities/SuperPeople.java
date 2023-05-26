@@ -37,7 +37,7 @@ public class SuperPeople {
     private Long level = 1L;
 
     @Column(name = "DS_CURRENTEXPERIENCE")
-    private Long currentExperience;
+    private double currentExperience;
 
     @Column(name = "DS_NEXTLEVELEXPERIENCE")
     private Long nextLevelExperience = 100L;
