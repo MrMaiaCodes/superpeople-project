@@ -71,31 +71,48 @@ public class SuperPeopleService implements ISuperPeopleService {
     }
 
     @Override
-    public SuperPeople experienceAndLevelApplier(SuperPeople superPeople, Long xpGained)
+    public SuperPeople experienceAndLevelApplier(SuperPeople superPeople, Long xpGained, boolean winner)
             throws SuperPeopleNotFoundException {
         log.info("initialized xpAndLevelApplier");
-        experienceAdder(superPeople, xpGained);
+        battleExperienceAdder(superPeople.getId(), winner);
+        //experienceAdder(superPeople, xpGained);
         nextLevelCalculator(superPeople);
         log.info("successfully concluded xpAndLevelApplier");
         return superPeople;
     }
 
+    // var heroFind = superPeopleRepository.findById(superPeople.getId())
+    //                .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found")
+    //                );
+
+    public void battleExperienceAdder(Long idSuperPeople, boolean winner) throws SuperPeopleNotFoundException {
+        var superPeopleFound = superPeopleRepository.findById(idSuperPeople)
+                .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found"));
+        experienceAdder(
+                superPeopleFound,
+                SuperPeopleUtil.battleExperienceCalculator(superPeopleFound, winner).longValue()
+        );
+        superPeopleRepository.save(superPeopleFound);
+    }
+
+
+
+
     private SuperPeople experienceAdder(SuperPeople superPeople, Long xpGained)
             throws SuperPeopleNotFoundException {
         log.info("initialized superPeopleService.xpAdder");
-        var heroToEvolve = superPeopleRepository.findById(superPeople.getId())
-                .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found"));
+
         log.info("executing xpAdder");
-        heroToEvolve.setCurrentExperience(superPeople.getCurrentExperience() + xpGained);
+        superPeople.setCurrentExperience(superPeople.getCurrentExperience() + xpGained);
         log.info("successfully finished xpAdder");
-        return heroToEvolve;
+        return superPeople;
 
     }
     private void nextLevelCalculator(SuperPeople superPeople) {
         log.info("initialized superPeopleService.nextLevelCalculator");
         if (superPeople.getCurrentExperience() >= superPeople.getNextLevelExperience()) {
             superPeople.incrementLevel(superPeople);
-            Long extraXp = superPeople.getCurrentExperience() - superPeople.getNextLevelExperience();
+            double extraXp = superPeople.getCurrentExperience() - superPeople.getNextLevelExperience();
             superPeople.setNextLevelExperience(superPeople.getNextLevelExperience()
                     +(superPeople.getLevel() * 100));
             superPeople.setCurrentExperience(extraXp);

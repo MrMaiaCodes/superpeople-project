@@ -57,20 +57,16 @@ public class SuperPeopleUtil {
         }
     }
 
-    public static double winnerExperienceCalculator(SuperPeople superPeople) {
-        return superPeople.getCurrentExperience()+((superPeople.getLevel()*10)/1.5);
+    public static Double battleExperienceCalculator(SuperPeople superPeople, boolean winner) {
+        return winner ? winnerExperienceCalculator(superPeople) : loserExperienceCalculator(superPeople);
     }
 
-    public static double loserExperienceCalculator(SuperPeople superPeople) {
-        return superPeople.getCurrentExperience()+((superPeople.getLevel()*10)/2.5);
+    private static Double winnerExperienceCalculator(SuperPeople superPeople) {
+        return superPeople.getCurrentExperience() + ((superPeople.getLevel() * 10) / 1.5);
     }
 
-    public static void winnerExperienceAdder(SuperPeople superPeople) {
-        superPeople.setCurrentExperience(winnerExperienceCalculator(superPeople));
-    }
-
-    public static void loserExperienceAdder(SuperPeople superPeople) {
-        superPeople.setCurrentExperience(loserExperienceCalculator(superPeople));
+    private static Double loserExperienceCalculator(SuperPeople superPeople) {
+        return superPeople.getCurrentExperience() + ((superPeople.getLevel() * 10) / 2.5);
     }
 
 

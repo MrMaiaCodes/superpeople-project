@@ -14,7 +14,7 @@ public class SuperPeopleDTOAdapter {
 
         return SuperPeopleDTO.builder().name(superPeople.getName()).planet(superPeople.getPlanet())
                 .type(superPeople.getType()).level(superPeople.getLevel())
-                .currentExperience(superPeople.getCurrentExperience())
+                .currentExperience((long) superPeople.getCurrentExperience())
                 .nextLevelExperience(superPeople.getNextLevelExperience()).charisma(superPeople.getCharisma())
                 .intelligence(superPeople.getIntelligence()).dexterity(superPeople.getDexterity())
                 .strength(superPeople.getStrength()).wisdom(superPeople.getWisdom())

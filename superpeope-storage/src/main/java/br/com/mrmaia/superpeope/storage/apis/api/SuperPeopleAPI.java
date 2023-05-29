@@ -2,7 +2,9 @@ package br.com.mrmaia.superpeope.storage.apis.api;
 
 import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleAdapter;
 import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleDTOAdapter;
+import br.com.mrmaia.superpeope.storage.apis.dto.requests.BattleResultDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.requests.SuperPeopleDTO;
+import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.BattleResultResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.DeleteResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleListResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleResponseDTO;
@@ -60,7 +62,7 @@ public class SuperPeopleAPI {
                 ).build();
     }
 
-    @PutMapping("/change/{name}")
+    @PutMapping("/change/super-people")
     public SuperPeopleResponseDTO update(@RequestBody SuperPeopleDTO superPeopleDTO)
         throws SuperPeopleNotFoundException, InvalidNameException {
         return SuperPeopleResponseDTO.builder()
@@ -69,6 +71,18 @@ public class SuperPeopleAPI {
                                 superPeopleService.update(
                                         SuperPeopleAdapter.convertTo(superPeopleDTO)
                                 )
+                        )
+                ).build();
+    }
+
+    @PutMapping("/battle-result/super-people")
+    public BattleResultResponseDTO battleExperienceAndLevelApplier(@RequestBody SuperPeopleDTO battleResultDTO)
+        throws SuperPeopleNotFoundException {
+
+        return BattleResultResponseDTO.builder()
+                .data(
+                        SuperPeopleDTOAdapter.convertTo(
+                                superPeopleService.experienceAndLevelApplier(battleResultDTO)
                         )
                 ).build();
     }
