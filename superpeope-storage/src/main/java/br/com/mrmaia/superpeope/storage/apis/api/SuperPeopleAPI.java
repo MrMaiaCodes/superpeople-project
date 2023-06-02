@@ -74,7 +74,7 @@ public class SuperPeopleAPI {
                         )
                 ).build();
     }
-
+/*
     @PutMapping("/battle-result/super-people")
     public BattleResultResponseDTO battleExperienceAndLevelApplier(@RequestBody SuperPeopleDTO battleResultDTO)
         throws SuperPeopleNotFoundException {
@@ -87,6 +87,7 @@ public class SuperPeopleAPI {
                 ).build();
     }
 
+ */
     @DeleteMapping("/{superPeopleId}")
     public ResponseEntity<DeleteResponseDTO> delete(@PathVariable("superPeopleId") long superPeopleId)
         throws SuperPeopleNotFoundException {

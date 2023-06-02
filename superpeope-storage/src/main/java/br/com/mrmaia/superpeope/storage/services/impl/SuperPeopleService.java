@@ -71,32 +71,17 @@ public class SuperPeopleService implements ISuperPeopleService {
     }
 
     @Override
-    public SuperPeople experienceAndLevelApplier(SuperPeople superPeople, Long xpGained, boolean winner)
+    public SuperPeople experienceAndLevelApplier(Long superPeopleId, Long xpGained, boolean winner)
             throws SuperPeopleNotFoundException {
         log.info("initialized xpAndLevelApplier");
-        battleExperienceAdder(superPeople.getId(), winner);
-        //experienceAdder(superPeople, xpGained);
-        nextLevelCalculator(superPeople);
-        log.info("successfully concluded xpAndLevelApplier");
-        return superPeople;
-    }
-
-    // var heroFind = superPeopleRepository.findById(superPeople.getId())
-    //                .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found")
-    //                );
-
-    public void battleExperienceAdder(Long idSuperPeople, boolean winner) throws SuperPeopleNotFoundException {
-        var superPeopleFound = superPeopleRepository.findById(idSuperPeople)
+        var superPeopleFound = superPeopleRepository.findById(superPeopleId)
                 .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found"));
-        experienceAdder(
-                superPeopleFound,
-                SuperPeopleUtil.battleExperienceCalculator(superPeopleFound, winner).longValue()
-        );
-        superPeopleRepository.save(superPeopleFound);
+        experienceAdder(superPeopleFound,
+                SuperPeopleUtil.battleExperienceCalculator(superPeopleFound, winner).longValue());
+        nextLevelCalculator(superPeopleFound);
+        log.info("successfully concluded xpAndLevelApplier");
+        return superPeopleFound;
     }
-
-
-
 
     private SuperPeople experienceAdder(SuperPeople superPeople, Long xpGained)
             throws SuperPeopleNotFoundException {

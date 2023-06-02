@@ -256,7 +256,7 @@ public class SuperPeopleServiceTest {
     void testExperienceAndLevelApplierSuccess() throws InvalidNameException, SuperPeopleNotFoundException {
         var heroTested = SuperPeopleBuilder.superPeopleSuccessBuilder();
         when(superPeopleRepository.findById(1L)).thenReturn(Optional.of(heroTested));
-        superPeopleService.experienceAndLevelApplier(heroTested, 100L, true);
+        superPeopleService.experienceAndLevelApplier(heroTested.getId(), 100L, true);
     }
 
     //void testUpdateSuperPersonNotFoundExceptionError() throws SuperPeopleNotFoundException {
@@ -275,7 +275,7 @@ public class SuperPeopleServiceTest {
         var heroTested = SuperPeopleBuilder.superPeopleSuccessBuilder();
         when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
         SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
-                () ->{superPeopleService.experienceAndLevelApplier(heroTested, 50L, true);
+                () ->{superPeopleService.experienceAndLevelApplier(heroTested.getId(), 50L, true);
         });
         Assertions.assertEquals("S04", thrown.getCode());
         Assertions.assertEquals("not found", thrown.getMessage());

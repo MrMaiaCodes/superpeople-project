@@ -8,7 +8,7 @@ import java.util.List;
 public interface ISuperPeopleService extends IService<SuperPeople> {
 
 
-    SuperPeople experienceAndLevelApplier(SuperPeople superPeople, Long xpGained, boolean winner)
+    SuperPeople experienceAndLevelApplier(Long superPeopleId, Long xpGained, boolean winner)
             throws SuperPeopleNotFoundException;
 
     List<SuperPeople> findSuperPeopleByName(String heroName) throws SuperPeopleNotFoundException;
