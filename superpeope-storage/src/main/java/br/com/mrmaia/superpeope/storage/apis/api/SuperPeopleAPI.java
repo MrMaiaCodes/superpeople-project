@@ -2,9 +2,8 @@ package br.com.mrmaia.superpeope.storage.apis.api;
 
 import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleAdapter;
 import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleDTOAdapter;
-import br.com.mrmaia.superpeope.storage.apis.dto.requests.BattleResultDTO;
+import br.com.mrmaia.superpeope.storage.apis.ISuperPeopleAPI;
 import br.com.mrmaia.superpeope.storage.apis.dto.requests.SuperPeopleDTO;
-import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.BattleResultResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.DeleteResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleListResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleResponseDTO;
@@ -14,16 +13,13 @@ import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
 import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import br.com.mrmaia.superpeope.storage.services.ISuperPeopleService;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("V1/super-people")
-public class SuperPeopleAPI {
+public class SuperPeopleAPI implements ISuperPeopleAPI {
 
     @Autowired
     private ISuperPeopleService superPeopleService;
@@ -89,7 +85,7 @@ public class SuperPeopleAPI {
 
  */
     @DeleteMapping("/{superPeopleId}")
-    public ResponseEntity<DeleteResponseDTO> delete(@PathVariable("superPeopleId") long superPeopleId)
+    public ResponseEntity<DeleteResponseDTO> delete(@PathVariable("superPeopleId") Long superPeopleId)
         throws SuperPeopleNotFoundException {
         superPeopleService.delete(SuperPeople.builder().id(superPeopleId).build());
 

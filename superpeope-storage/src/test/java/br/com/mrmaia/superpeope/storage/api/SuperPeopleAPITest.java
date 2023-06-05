@@ -1,7 +1,6 @@
 package br.com.mrmaia.superpeope.storage.api;
 
 import br.com.mrmaia.superpeope.storage.apis.api.SuperPeopleAPI;
-import br.com.mrmaia.superpeope.storage.apis.dto.requests.SuperPeopleDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleListResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleResponseDTO;
 import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
@@ -12,7 +11,6 @@ import br.com.mrmaia.superpeope.storage.model.SuperPeopleBuilder;
 import br.com.mrmaia.superpeope.storage.model.SuperPeopleDTOBuilder;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import br.com.mrmaia.superpeope.storage.services.ISuperPeopleService;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +22,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class SuperPeopleAPITest {
