@@ -103,10 +103,17 @@ public class SuperPeopleAPITest {
     @Test
     void testFindSuccess() throws SuperPeopleNotFoundException {
         var heroFound = SuperPeopleBuilder.superPeopleSuccessBuilder();
-        when(superPeopleService.findSuperPeopleByName(anyString())).thenReturn(List.of(heroFound));
+        when(superPeopleService.findSuperPeopleByName(anyString()))
+                .thenReturn(List.of(heroFound));
+        when(superPeopleMapper.convertToListDto(List.of(heroFound)))
+                .thenReturn(
+                        List.of(
+                                SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder()
+                        )
+                );
         SuperPeopleListResponseDTO result = superPeopleAPI.find("Big Dude");
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(0L, result.getData().size());
+        Assertions.assertEquals(1L, result.getData().size());
     }
 
     @Test
@@ -114,16 +121,25 @@ public class SuperPeopleAPITest {
         when(superPeopleService.findSuperPeopleByName(any()))
                 .thenThrow(new SuperPeopleNotFoundException("S01", "not found"));
         SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
-                () -> {superPeopleAPI.find("Big Man");});
+                () -> {
+                    superPeopleAPI.find("Big Man");
+                });
         Assertions.assertEquals("S01", thrown.getCode());
         Assertions.assertEquals("not found", thrown.getMessage());
     }
 
     @Test
-    void testListAllSuccess(){
+    void testListAllSuccess() {
         var heroFind = SuperPeopleBuilder.superPeopleSuccessBuilder();
         var heroFind2 = SuperPeopleBuilder.superPeopleSuccessBuilder2();
         when(superPeopleService.listAll()).thenReturn(List.of(heroFind, heroFind2));
+        when(superPeopleMapper.convertToListDto(List.of(heroFind, heroFind2)))
+                .thenReturn(
+                        List.of(
+                                SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder(),
+                                SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder()
+                        )
+                );
         SuperPeopleListResponseDTO result = superPeopleAPI.listAll();
         Assertions.assertNotNull(result);
         Assertions.assertEquals(2, result.getData().size());
@@ -145,7 +161,9 @@ public class SuperPeopleAPITest {
         when(superPeopleService.update(any(), any()))
                 .thenThrow(new SuperPeopleNotFoundException("S01", "not found"));
         SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
-        () -> {superPeopleAPI.update(1L, heroFindDTO);});
+                () -> {
+                    superPeopleAPI.update(1L, heroFindDTO);
+                });
         Assertions.assertEquals("S01", thrown.getCode());
         Assertions.assertEquals("not found", thrown.getMessage());
     }
@@ -174,7 +192,9 @@ public class SuperPeopleAPITest {
         doThrow(new SuperPeopleNotFoundException("S01", "not found"))
                 .when(superPeopleService).delete(SuperPeople.builder().id(1L).build());
         SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
-                () -> {superPeopleAPI.delete(1L);});
+                () -> {
+                    superPeopleAPI.delete(1L);
+                });
         Assertions.assertEquals("S01", thrown.getCode());
         Assertions.assertEquals("not found", thrown.getMessage());
     }
