@@ -1,9 +1,7 @@
 package br.com.mrmaia.superpeope.storage.apis.api;
 
-import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleAdapter;
-import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleDTOAdapter;
 import br.com.mrmaia.superpeope.storage.apis.ISuperPeopleAPI;
-import br.com.mrmaia.superpeope.storage.apis.ISuperPeopleMapper;
+import br.com.mrmaia.superpeope.storage.apis.dto.requests.BattleResultDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.requests.SuperPeopleDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.DeleteResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleListResponseDTO;
@@ -12,9 +10,11 @@ import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroE
 import br.com.mrmaia.superpeope.storage.exceptions.ExcessiveTotalBattleAttributesException;
 import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
 import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
+import br.com.mrmaia.superpeope.storage.mappers.ISuperPeopleMapper;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import br.com.mrmaia.superpeope.storage.services.ISuperPeopleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,43 +24,41 @@ import java.util.List;
 @RequestMapping("V1/super-people")
 public class SuperPeopleAPI implements ISuperPeopleAPI {
 
-    @Autowired
+
     private ISuperPeopleService superPeopleService;
+
+    private ISuperPeopleMapper superPeopleMapper;
+
+    @Autowired
+    public SuperPeopleAPI(ISuperPeopleService superPeopleService, ISuperPeopleMapper superPeopleMapper) {
+        this.superPeopleService = superPeopleService;
+        this.superPeopleMapper = superPeopleMapper;
+    }
 
     @PostMapping("/new")
     public SuperPeopleResponseDTO add(@RequestBody SuperPeopleDTO superPeopleDTO)
             throws InvalidNameException, BattleAttributeWithValueZeroException,
             ExcessiveTotalBattleAttributesException {
 
-        SuperPeople superPeople = ISuperPeopleMapper.INSTANCE.convertToEntity(superPeopleDTO);
-        SuperPeople savedSuperPeople = superPeopleService.save(superPeople);
-        SuperPeopleDTO savedSuperPeopleDTO = ISuperPeopleMapper.INSTANCE.convertToDto(savedSuperPeople);
-
         return SuperPeopleResponseDTO.builder()
                 .data(
-                        savedSuperPeopleDTO
-                       /* SuperPeopleDTOAdapter.convertTo(
-                                superPeopleService.save(SuperPeopleAdapter.convertTo(superPeopleDTO))
-
-                        */
+                        superPeopleMapper.convertToDto(
+                                superPeopleService.save(
+                                        superPeopleMapper.convertToEntity(superPeopleDTO)
+                                )
                         )
+                )
                 .build();
     }
 
     @GetMapping("/find/{super-people}")
     public SuperPeopleListResponseDTO find(@PathVariable("super-people") String heroName)
-        throws SuperPeopleNotFoundException {
+            throws SuperPeopleNotFoundException {
 
         List<SuperPeople> superPeopleList = superPeopleService.findSuperPeopleByName(heroName);
-        List<SuperPeopleDTO> superPeopleDTOlist = ISuperPeopleMapper.INSTANCE.convertToListDto(superPeopleList);
+        List<SuperPeopleDTO> superPeopleDTOList = superPeopleMapper.convertToListDto(superPeopleList);
         return SuperPeopleListResponseDTO.builder()
-                .data(superPeopleDTOlist
-                        /*SuperPeopleDTOAdapter.convertToList(
-                                superPeopleService.findSuperPeopleByName(
-                                        heroName)
-                        )
-
-                         */
+                .data(superPeopleDTOList
                 ).build();
     }
 
@@ -68,24 +66,20 @@ public class SuperPeopleAPI implements ISuperPeopleAPI {
     public SuperPeopleListResponseDTO listAll() {
 
         List<SuperPeople> superPeopleList = superPeopleService.listAll();
-        List<SuperPeopleDTO> superPeopleDTOlist = ISuperPeopleMapper.INSTANCE.convertToListDto(
+        List<SuperPeopleDTO> superPeopleDTOList = superPeopleMapper.convertToListDto(
                 superPeopleList);
         return SuperPeopleListResponseDTO.builder()
-                .data(superPeopleDTOlist
-                        /*SuperPeopleDTOAdapter.convertToList(
-                                superPeopleService.listAll()
-                        )
-
-                         */
+                .data(superPeopleDTOList
                 ).build();
     }
 
-    @PutMapping("/change/super-people")
-    public SuperPeopleResponseDTO update(@RequestBody SuperPeopleDTO superPeopleDTO)
-        throws SuperPeopleNotFoundException, InvalidNameException {
+    @PutMapping("/change/super-people/{superPeopleId}")
+    public SuperPeopleResponseDTO update(@PathVariable("superPeopleId") Long superPeopleId,
+                                         @RequestBody SuperPeopleDTO superPeopleDTO)
+            throws SuperPeopleNotFoundException, InvalidNameException {
 
         SuperPeople superPeople = ISuperPeopleMapper.INSTANCE.convertToEntity(superPeopleDTO);
-        SuperPeople updatedSuperPeople = superPeopleService.update(superPeople);
+        SuperPeople updatedSuperPeople = superPeopleService.update(superPeopleId, superPeople);
         SuperPeopleDTO updatedSuperPeopleDTO = ISuperPeopleMapper.INSTANCE.convertToDto(updatedSuperPeople);
         return SuperPeopleResponseDTO.builder()
                 .data(updatedSuperPeopleDTO
@@ -98,23 +92,32 @@ public class SuperPeopleAPI implements ISuperPeopleAPI {
                          */
                 ).build();
     }
-/*
-    @PutMapping("/battle-result/super-people")
-    public BattleResultResponseDTO battleExperienceAndLevelApplier(@RequestBody SuperPeopleDTO battleResultDTO)
-        throws SuperPeopleNotFoundException {
 
-        return BattleResultResponseDTO.builder()
-                .data(
-                        SuperPeopleDTOAdapter.convertTo(
-                                superPeopleService.experienceAndLevelApplier(battleResultDTO)
-                        )
-                ).build();
+    //@PostMapping("/new")
+    //    public SuperPeopleResponseDTO add(@RequestBody SuperPeopleDTO superPeopleDTO)
+    //            throws InvalidNameException, BattleAttributeWithValueZeroException,
+    //            ExcessiveTotalBattleAttributesException {
+    //        return SuperPeopleResponseDTO.builder()
+    //                .data(
+    //                        superPeopleMapper.convertToDto(
+    //                                superPeopleService.save(
+    //                                        superPeopleMapper.convertToEntity(superPeopleDTO))).build();
+    //    }
+
+    @PutMapping("/battle-result/super-people")
+    public ResponseEntity battleExperienceAndLevelApplier(@RequestBody BattleResultDTO battleResultDTO)
+            throws SuperPeopleNotFoundException {
+
+        superPeopleService.experienceAndLevelApplier(battleResultDTO.getWinnerId(), true);
+        superPeopleService.experienceAndLevelApplier(battleResultDTO.getLoserId(), false);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
- */
+
     @DeleteMapping("/{superPeopleId}")
     public ResponseEntity<DeleteResponseDTO> delete(@PathVariable("superPeopleId") Long superPeopleId)
-        throws SuperPeopleNotFoundException {
+            throws SuperPeopleNotFoundException {
         superPeopleService.delete(SuperPeople.builder().id(superPeopleId).build());
 
         return ResponseEntity.ok(DeleteResponseDTO.builder()

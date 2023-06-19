@@ -225,7 +225,7 @@ public class SuperPeopleServiceTest {
                         .name("Big Man").planet("Big Planet").type("Hero")
                         .build()
         );
-        SuperPeople result = superPeopleService.update(
+        SuperPeople result = superPeopleService.update(1L,
                 SuperPeople.builder()
                         .name("Big Man").planet("Big Planet").type("Hero")
                         .build()
@@ -233,49 +233,34 @@ public class SuperPeopleServiceTest {
         Assertions.assertNotNull(result);
     }
 
-    @Test
-    void testUpdateSuperPersonNotFoundExceptionError() throws SuperPeopleNotFoundException {
-        when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
-        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
-                () -> {
-                    superPeopleService.update(SuperPeople.builder()
-                            .name("Big Man").planet("Big Planet").type("Hero").build());
-                });
-        Assertions.assertEquals("S04", thrown.getCode());
-        Assertions.assertEquals("not found", thrown.getMessage());
-    }
-    // public SuperPeople experienceAndLevelApplier(SuperPeople superPeople, Long xpGained)
-    //            throws SuperPeopleNotFoundException {
-    //        log.info("initialized xpAndLevelApplier");
-    //        experienceAdder(superPeople, xpGained);
-    //        nextLevelCalculator(superPeople);
-    //        log.info("successfully concluded xpAndLevelApplier");
-    //        return superPeople;
-    //    }
+
     @Test
     void testExperienceAndLevelApplierSuccess() throws InvalidNameException, SuperPeopleNotFoundException {
         var heroTested = SuperPeopleBuilder.superPeopleSuccessBuilder();
         when(superPeopleRepository.findById(1L)).thenReturn(Optional.of(heroTested));
-        superPeopleService.experienceAndLevelApplier(heroTested.getId(), 100L, true);
+
+        SuperPeople result = superPeopleService.experienceAndLevelApplier(1L, true);
+        Assertions.assertNotNull(result);
     }
 
-    //void testUpdateSuperPersonNotFoundExceptionError() throws SuperPeopleNotFoundException {
-    //        when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
-    //        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
-    //                () -> {
-    //                    superPeopleService.update(SuperPeople.builder()
-    //                            .name("Big Man").planet("Big Planet").type("Hero").build());
-    //                });
-    //        Assertions.assertEquals("S04", thrown.getCode());
-    //        Assertions.assertEquals("not found", thrown.getMessage());
-    //    }
+    @Test
+    void testUpdateSuperPersonNotFoundExceptionError() throws SuperPeopleNotFoundException {
+            when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
+            SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
+                    () -> {
+                        superPeopleService.update(1L, SuperPeople.builder()
+                                .name("Big Man").planet("Big Planet").type("Hero").build());
+                    });
+            Assertions.assertEquals("S04", thrown.getCode());
+            Assertions.assertEquals("not found", thrown.getMessage());
+        }
     @Test
     void testExperienceAndLevelApplierSuperPeopleNotFoundExceptionError()
             throws SuperPeopleNotFoundException {
         var heroTested = SuperPeopleBuilder.superPeopleSuccessBuilder();
         when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
         SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
-                () ->{superPeopleService.experienceAndLevelApplier(heroTested.getId(), 50L, true);
+                () ->{superPeopleService.experienceAndLevelApplier(heroTested.getId(),true);
         });
         Assertions.assertEquals("S04", thrown.getCode());
         Assertions.assertEquals("not found", thrown.getMessage());

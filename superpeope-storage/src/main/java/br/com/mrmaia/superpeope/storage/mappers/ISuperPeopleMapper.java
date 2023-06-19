@@ -1,4 +1,4 @@
-package br.com.mrmaia.superpeope.storage.apis;
+package br.com.mrmaia.superpeope.storage.mappers;
 
 import br.com.mrmaia.superpeope.storage.apis.dto.requests.SuperPeopleDTO;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper (componentModel = "spring")
 public interface ISuperPeopleMapper {
 
     ISuperPeopleMapper INSTANCE = Mappers.getMapper(ISuperPeopleMapper.class);

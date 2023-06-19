@@ -1,7 +1,5 @@
 package br.com.mrmaia.superpeope.storage.apis;
 
-import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleAdapter;
-import br.com.mrmaia.superpeope.storage.adapters.SuperPeopleDTOAdapter;
 import br.com.mrmaia.superpeope.storage.apis.dto.requests.SuperPeopleDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.errors.ErrorSpecificationDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.DeleteResponseDTO;
@@ -11,12 +9,10 @@ import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroE
 import br.com.mrmaia.superpeope.storage.exceptions.ExcessiveTotalBattleAttributesException;
 import br.com.mrmaia.superpeope.storage.exceptions.InvalidNameException;
 import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
-import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 
 public interface ISuperPeopleAPI {
@@ -46,7 +42,7 @@ public interface ISuperPeopleAPI {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "success"),
     @ApiResponse(code = 404, response = ErrorSpecificationDTO.class, message = "not found"),
     @ApiResponse(code = 400, response = ErrorSpecificationDTO.class, message = "invalid name")})
-    public SuperPeopleResponseDTO update(SuperPeopleDTO superPeopleDTO)
+    public SuperPeopleResponseDTO update(Long superPeopleId, SuperPeopleDTO superPeopleDTO)
             throws SuperPeopleNotFoundException, InvalidNameException;
 
     @ApiOperation(value = "delete SuperPeople object",
@@ -55,6 +51,11 @@ public interface ISuperPeopleAPI {
         @ApiResponse(code = 404, response = ErrorSpecificationDTO.class, message = "not found")})
     public ResponseEntity<DeleteResponseDTO> delete(Long superPeopleId)
             throws SuperPeopleNotFoundException;
+
+    //public SuperPeople(String strength, String speed, String age){
+    //this.strength = strength;
+    //this.speed = speed;
+    //this..age = age;
 
     /*
         @PutMapping("/battle-result/super-people")

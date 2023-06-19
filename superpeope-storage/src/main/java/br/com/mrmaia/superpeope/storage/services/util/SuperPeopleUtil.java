@@ -62,11 +62,11 @@ public class SuperPeopleUtil {
     }
 
     private static Double winnerExperienceCalculator(SuperPeople superPeople) {
-        return superPeople.getCurrentExperience() + ((superPeople.getLevel() * 10) / 1.5);
+        return (superPeople.getLevel() * 10) / 1.5;
     }
 
     private static Double loserExperienceCalculator(SuperPeople superPeople) {
-        return superPeople.getCurrentExperience() + ((superPeople.getLevel() * 10) / 2.5);
+        return (superPeople.getLevel() * 10) / 2.5;
     }
 
 

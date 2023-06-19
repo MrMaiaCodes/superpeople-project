@@ -71,7 +71,7 @@ public class SuperPeopleService implements ISuperPeopleService {
     }
 
     @Override
-    public SuperPeople experienceAndLevelApplier(Long superPeopleId, Long xpGained, boolean winner)
+    public SuperPeople experienceAndLevelApplier(Long superPeopleId, boolean winner)
             throws SuperPeopleNotFoundException {
         log.info("initialized xpAndLevelApplier");
         var superPeopleFound = superPeopleRepository.findById(superPeopleId)
@@ -126,9 +126,9 @@ public class SuperPeopleService implements ISuperPeopleService {
 
     //change this so every time the person levels up they get an extra 5 points to place as they choose
     @Override
-    public SuperPeople update(SuperPeople superPeople) throws SuperPeopleNotFoundException {
+    public SuperPeople update(Long id, SuperPeople superPeople) throws SuperPeopleNotFoundException {
         log.info("initialized SuperPeopleService.update");
-        var heroFind = superPeopleRepository.findById(superPeople.getId())
+        var heroFind = superPeopleRepository.findById(id)
                 .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found")
                 );
         log.info("processing update");
