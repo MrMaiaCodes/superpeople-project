@@ -28,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+
+// TODO Change all test methods to resemble save test method
 public class SuperPeopleAPITest {
 
     @Mock
@@ -50,18 +52,20 @@ public class SuperPeopleAPITest {
             ExcessiveTotalBattleAttributesException {
         var heroTested = SuperPeopleBuilder.superPeopleSuccessBuilder();
         var heroTestedDTO = SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder();
-        when(superPeopleService.save(any())).thenReturn(heroTested);
+        var heroNoId = SuperPeopleBuilder.superPeopleSuccessBuilderNoId();
+        when(superPeopleService.save(eq(heroNoId))).thenReturn(heroTested);
 
-        SuperPeopleResponseDTO result = superPeopleAPI.add(heroTestedDTO);
+        superPeopleAPI.add(heroTestedDTO);
+        verify(superPeopleMapper).convertToDto(heroTested);
 
-        Assertions.assertNotNull(result);
     }
 
     @Test
     void testAddInvalidNameExceptionError() throws InvalidNameException,
             BattleAttributeWithValueZeroException, ExcessiveTotalBattleAttributesException {
         var heroAddedDTO = SuperPeopleDTOBuilder.superPeopleDTOInvalidNameExceptionErrorBuilder();
-        when(superPeopleService.save(any())).thenThrow(new InvalidNameException("S02", "invalid name"));
+        var heroNoId = SuperPeopleBuilder.superPeopleSuccessBuilderNoId();
+        when(superPeopleService.save(eq(heroNoId))).thenThrow(new InvalidNameException("S02", "invalid name"));
         InvalidNameException thrown = Assertions.assertThrows(InvalidNameException.class, () -> {
             superPeopleAPI.add(heroAddedDTO);
         });
