@@ -7,11 +7,10 @@ import java.util.List;
 
 public interface ISuperPeopleService extends IService<SuperPeople> {
 
-
-    SuperPeople xpAndLevelApplier(SuperPeople superPeople, Long xpGained)
+    SuperPeople experienceAndLevelApplier(Long superPeopleId, boolean winner)
             throws SuperPeopleNotFoundException;
 
-    List<SuperPeople> findSuperPeopleByName(SuperPeople superPeople) throws SuperPeopleNotFoundException;
+    List<SuperPeople> findSuperPeopleByName(String heroName) throws SuperPeopleNotFoundException;
 
 }
 

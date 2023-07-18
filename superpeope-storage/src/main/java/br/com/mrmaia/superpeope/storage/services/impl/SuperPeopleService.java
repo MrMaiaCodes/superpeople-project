@@ -71,35 +71,34 @@ public class SuperPeopleService implements ISuperPeopleService {
     }
 
     @Override
-    public SuperPeople xpAndLevelApplier(SuperPeople superPeople, Long xpGained)
+    public SuperPeople experienceAndLevelApplier(Long superPeopleId, boolean winner)
             throws SuperPeopleNotFoundException {
         log.info("initialized xpAndLevelApplier");
-        log.info("executing xpAndLevelApplier");
-        xpAdder(superPeople, xpGained);
-        nextLevelCalculator(superPeople);
+        var superPeopleFound = superPeopleRepository.findById(superPeopleId)
+                .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found"));
+        experienceAdder(superPeopleFound,
+                SuperPeopleUtil.battleExperienceCalculator(superPeopleFound, winner).longValue());
+        nextLevelCalculator(superPeopleFound);
         log.info("successfully concluded xpAndLevelApplier");
-        return superPeople;
+        return superPeopleFound;
     }
 
-    private SuperPeople xpAdder(SuperPeople superPeople, Long xpGained)
+    private SuperPeople experienceAdder(SuperPeople superPeople, Long xpGained)
             throws SuperPeopleNotFoundException {
         log.info("initialized superPeopleService.xpAdder");
-        var heroToEvolve = superPeopleRepository.findById(superPeople.getId())
-                .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found"));
+
         log.info("executing xpAdder");
-        heroToEvolve.setCurrentExperience(superPeople.getCurrentExperience() + xpGained);
-        nextLevelCalculator(heroToEvolve);
+        superPeople.setCurrentExperience(superPeople.getCurrentExperience() + xpGained);
         log.info("successfully finished xpAdder");
-        return heroToEvolve;
+        return superPeople;
 
     }
     private void nextLevelCalculator(SuperPeople superPeople) {
         log.info("initialized superPeopleService.nextLevelCalculator");
         if (superPeople.getCurrentExperience() >= superPeople.getNextLevelExperience()) {
             superPeople.incrementLevel(superPeople);
-            Long extraXp = superPeople.getCurrentExperience() - superPeople.getNextLevelExperience();
-            superPeople.setCurrentExperience(superPeople.getNextLevelExperience());
-            superPeople.setNextLevelExperience(superPeople.getCurrentExperience()
+            double extraXp = superPeople.getCurrentExperience() - superPeople.getNextLevelExperience();
+            superPeople.setNextLevelExperience(superPeople.getNextLevelExperience()
                     +(superPeople.getLevel() * 100));
             superPeople.setCurrentExperience(extraXp);
         }
@@ -109,11 +108,11 @@ public class SuperPeopleService implements ISuperPeopleService {
 
 
     @Override
-    public List<SuperPeople> findSuperPeopleByName(SuperPeople superPeople)
+    public List<SuperPeople> findSuperPeopleByName(String heroName)
             throws SuperPeopleNotFoundException {
         log.info("initialized SuperPeopleService.findSuperPeopleByName");
-        var heroFind = superPeopleRepository.findSuperPeopleByName(superPeople.getName());
-        SuperPeopleUtil.superPeopleFoundVerifier(superPeople.getName());
+        var heroFind = superPeopleRepository.findSuperPeopleByName(heroName);
+        SuperPeopleUtil.superPeopleFoundVerifier(heroFind, heroName);
         log.info("find successful");
         return heroFind;
     }
@@ -127,9 +126,9 @@ public class SuperPeopleService implements ISuperPeopleService {
 
     //change this so every time the person levels up they get an extra 5 points to place as they choose
     @Override
-    public SuperPeople update(SuperPeople superPeople) throws SuperPeopleNotFoundException {
+    public SuperPeople update(Long id, SuperPeople superPeople) throws SuperPeopleNotFoundException {
         log.info("initialized SuperPeopleService.update");
-        var heroFind = superPeopleRepository.findById(superPeople.getId())
+        var heroFind = superPeopleRepository.findById(id)
                 .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found")
                 );
         log.info("processing update");

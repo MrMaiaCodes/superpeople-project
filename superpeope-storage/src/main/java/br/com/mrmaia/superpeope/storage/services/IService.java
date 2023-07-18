@@ -13,7 +13,7 @@ public interface IService<T> {
     T save(T t) throws InvalidNameException,
             ExcessiveTotalBattleAttributesException, BattleAttributeWithValueZeroException;
 
-    SuperPeople update(T t) throws SuperPeopleNotFoundException,
+    SuperPeople update(Long id, T t) throws SuperPeopleNotFoundException,
             InvalidNameException;
 
     void delete(T t) throws SuperPeopleNotFoundException;
