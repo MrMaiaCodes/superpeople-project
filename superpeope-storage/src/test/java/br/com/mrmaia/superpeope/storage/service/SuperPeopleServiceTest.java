@@ -113,13 +113,25 @@ public class SuperPeopleServiceTest {
     @Test
     void findSuperPeopleByNameSuccess() throws SuperPeopleNotFoundException {
         var builder = SuperPeopleBuilder.superPeopleSuccessBuilder();
-        when(superPeopleRepository.findSuperPeopleByName(eq("Big Dude")))
+        when(superPeopleRepository.findSuperPeopleByName(eq(builder.getName())))
                 .thenReturn(List.of(builder
                         )
                 );
-        List<SuperPeople> superPeopleFound = superPeopleService.findSuperPeopleByName("Big Dude");
+        List<SuperPeople> superPeopleFound = superPeopleService.findSuperPeopleByName(builder.getName());
         Assertions.assertNotNull(superPeopleFound);
     }
+
+    //@Test
+    //    void testDeleteSuperPeopleNotFoundExceptionError() throws SuperPeopleNotFoundException {
+    //        var builder = SuperPeopleBuilder.superPeopleSuccessBuilder();
+    //        when(superPeopleRepository.findById(eq(1L))).thenReturn(Optional.empty());
+    //        SuperPeopleNotFoundException thrown = Assertions.assertThrows(
+    //                SuperPeopleNotFoundException.class, () -> {
+    //                    superPeopleService.delete(builder);
+    //                });
+    //        Assertions.assertEquals("S04", thrown.getCode());
+    //        Assertions.assertEquals("not found", thrown.getMessage());
+    //    }
 
     @Test
     void findSuperPeopleByNameSuperPeopleNotFoundExceptionError()
@@ -209,7 +221,7 @@ public class SuperPeopleServiceTest {
     void testExperienceAndLevelApplierSuperPeopleNotFoundExceptionError()
             throws SuperPeopleNotFoundException {
         var heroTested = SuperPeopleBuilder.superPeopleSuccessBuilder();
-        when(superPeopleRepository.findById(any())).thenReturn(Optional.empty());
+        when(superPeopleRepository.findById(eq(heroTested.getId()))).thenReturn(Optional.empty());
         SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
                 () ->{superPeopleService.experienceAndLevelApplier(heroTested.getId(),true);
         });
