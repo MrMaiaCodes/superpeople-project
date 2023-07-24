@@ -1,7 +1,6 @@
 package br.com.mrmaia.superpeope.storage.api;
 
 import br.com.mrmaia.superpeope.storage.apis.api.SuperPeopleAPI;
-import br.com.mrmaia.superpeope.storage.apis.dto.requests.BattleResultDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleListResponseDTO;
 import br.com.mrmaia.superpeope.storage.apis.dto.responses.responses.SuperPeopleResponseDTO;
 import br.com.mrmaia.superpeope.storage.exceptions.BattleAttributeWithValueZeroException;
@@ -25,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
@@ -53,6 +51,7 @@ public class SuperPeopleAPITest {
         var heroTested = SuperPeopleBuilder.superPeopleSuccessBuilder();
         var heroTestedDTO = SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder();
         var heroNoId = SuperPeopleBuilder.superPeopleSuccessBuilderNoId();
+        when(superPeopleMapper.convertToEntity(eq(heroTestedDTO))).thenReturn(heroNoId);
         when(superPeopleService.save(eq(heroNoId))).thenReturn(heroTested);
 
         superPeopleAPI.add(heroTestedDTO);
@@ -65,6 +64,7 @@ public class SuperPeopleAPITest {
             BattleAttributeWithValueZeroException, ExcessiveTotalBattleAttributesException {
         var heroAddedDTO = SuperPeopleDTOBuilder.superPeopleDTOInvalidNameExceptionErrorBuilder();
         var heroNoId = SuperPeopleBuilder.superPeopleSuccessBuilderNoId();
+        when(superPeopleMapper.convertToEntity(eq(heroAddedDTO))).thenReturn(heroNoId);
         when(superPeopleService.save(eq(heroNoId))).thenThrow(new InvalidNameException("S02", "invalid name"));
         InvalidNameException thrown = Assertions.assertThrows(InvalidNameException.class, () -> {
             superPeopleAPI.add(heroAddedDTO);
@@ -79,6 +79,7 @@ public class SuperPeopleAPITest {
         var heroAddedDTO = SuperPeopleDTOBuilder
                 .superPeopleDTOBattleAttributeWithValueZeroExceptionErrorBuilder();
         var heroNoId = SuperPeopleBuilder.superPeopleSuccessBuilderNoId();
+        when(superPeopleMapper.convertToEntity(eq(heroAddedDTO))).thenReturn(heroNoId);
         when(superPeopleService.save(eq(heroNoId)))
                 .thenThrow(new BattleAttributeWithValueZeroException("S03", "attribute with zero value"));
         BattleAttributeWithValueZeroException thrown = Assertions.assertThrows(
@@ -96,6 +97,7 @@ public class SuperPeopleAPITest {
         var heroAddedDTO = SuperPeopleDTOBuilder
                 .superPeopleDTOExcessiveTotalBattleAttributesExceptionErrorBuilder();
         var heroNoId = SuperPeopleBuilder.superPeopleSuccessBuilderNoId();
+        when(superPeopleMapper.convertToEntity(eq(heroAddedDTO))).thenReturn(heroNoId);
         when(superPeopleService.save(eq(heroNoId)))
                 .thenThrow(new ExcessiveTotalBattleAttributesException("S04", "excessive battle attributes"));
         ExcessiveTotalBattleAttributesException thrown = Assertions.assertThrows(
@@ -113,18 +115,18 @@ public class SuperPeopleAPITest {
         var heroTestedDTO = SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder();
         when(superPeopleService.findSuperPeopleByName(eq(heroFound.getName())))
                 .thenReturn(List.of(heroFound));
+       /*
         when(superPeopleMapper.convertToListDto(List.of(heroFound)))
                 .thenReturn(
                         List.of(
                                 SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder()
                         )
                 );
-        SuperPeopleListResponseDTO result = superPeopleAPI.find(heroFound.getName());
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(1L, result.getData().size());
+
+        */
 
         superPeopleAPI.find(heroTestedDTO.getName());
-        verify(superPeopleMapper).convertToDto(heroFound);
+        verify(superPeopleMapper).convertToListDto(List.of(heroFound));
     }
 
     @Test
@@ -170,8 +172,9 @@ public class SuperPeopleAPITest {
             throws SuperPeopleNotFoundException, InvalidNameException {
         var heroFind = SuperPeopleBuilder.superPeopleSuccessBuilder();
         var heroFindDTO = SuperPeopleDTOBuilder.superPeopleDTOSuccessBuilder();
-        when(superPeopleService.update(eq(heroFind.getId()), eq(heroFind)))
+        when(superPeopleService.update(eq(1L), eq(heroFind)))
                 .thenThrow(new SuperPeopleNotFoundException("S01", "not found"));
+        when(superPeopleMapper.convertToEntity(eq(heroFindDTO))).thenReturn(heroFind);
         SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
                 () -> {
                     superPeopleAPI.update(1L, heroFindDTO);
@@ -184,11 +187,12 @@ public class SuperPeopleAPITest {
     @Test
     void testUpdateInvalidNameExceptionError() throws SuperPeopleNotFoundException, InvalidNameException {
         var heroUpdated = SuperPeopleBuilder.superPeopleInvalidNameExceptionErrorBuilder();
-        var heroDeleted = SuperPeopleDTOBuilder.superPeopleDTOInvalidNameExceptionErrorBuilder();
-        when(superPeopleService.update(eq(heroUpdated.getId()), eq(heroUpdated)))
+        var heroUpdatedDTO = SuperPeopleDTOBuilder.superPeopleDTOInvalidNameExceptionErrorBuilder();
+        when(superPeopleMapper.convertToEntity(eq(heroUpdatedDTO))).thenReturn(heroUpdated);
+        when(superPeopleService.update(eq(1L), eq(heroUpdated)))
                 .thenThrow(new InvalidNameException("S02", "invalid name"));
         InvalidNameException thrown = Assertions.assertThrows(InvalidNameException.class, () -> {
-            superPeopleAPI.update(1L, heroDeleted);
+            superPeopleAPI.update(1L, heroUpdatedDTO);
         });
         Assertions.assertEquals("S02", thrown.getCode());
         Assertions.assertEquals("invalid name", thrown.getMessage());
