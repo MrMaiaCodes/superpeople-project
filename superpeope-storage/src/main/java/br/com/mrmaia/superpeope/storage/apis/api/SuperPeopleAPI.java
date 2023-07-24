@@ -78,18 +78,14 @@ public class SuperPeopleAPI implements ISuperPeopleAPI {
                                          @RequestBody SuperPeopleDTO superPeopleDTO)
             throws SuperPeopleNotFoundException, InvalidNameException {
 
-        SuperPeople superPeople = ISuperPeopleMapper.INSTANCE.convertToEntity(superPeopleDTO);
-        SuperPeople updatedSuperPeople = superPeopleService.update(superPeopleId, superPeople);
-        SuperPeopleDTO updatedSuperPeopleDTO = ISuperPeopleMapper.INSTANCE.convertToDto(updatedSuperPeople);
         return SuperPeopleResponseDTO.builder()
-                .data(updatedSuperPeopleDTO
-                        /*SuperPeopleDTOAdapter.convertTo(
+                .data(
+                        superPeopleMapper.convertToDto(
                                 superPeopleService.update(
-                                        SuperPeopleAdapter.convertTo(superPeopleDTO)
+                                        superPeopleId, superPeopleMapper.convertToEntity(
+                                                superPeopleDTO)
                                 )
                         )
-
-                         */
                 ).build();
     }
 
