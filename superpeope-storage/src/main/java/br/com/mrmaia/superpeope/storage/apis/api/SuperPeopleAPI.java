@@ -89,17 +89,6 @@ public class SuperPeopleAPI implements ISuperPeopleAPI {
                 ).build();
     }
 
-    //@PostMapping("/new")
-    //    public SuperPeopleResponseDTO add(@RequestBody SuperPeopleDTO superPeopleDTO)
-    //            throws InvalidNameException, BattleAttributeWithValueZeroException,
-    //            ExcessiveTotalBattleAttributesException {
-    //        return SuperPeopleResponseDTO.builder()
-    //                .data(
-    //                        superPeopleMapper.convertToDto(
-    //                                superPeopleService.save(
-    //                                        superPeopleMapper.convertToEntity(superPeopleDTO))).build();
-    //    }
-
     @PutMapping("/battle-result/super-people")
     public ResponseEntity battleExperienceAndLevelApplier(@RequestBody BattleResultDTO battleResultDTO)
             throws SuperPeopleNotFoundException {
@@ -109,7 +98,6 @@ public class SuperPeopleAPI implements ISuperPeopleAPI {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
 
     @DeleteMapping("/{superPeopleId}")
     public ResponseEntity<DeleteResponseDTO> delete(@PathVariable("superPeopleId") Long superPeopleId)
