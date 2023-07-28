@@ -230,4 +230,35 @@ public class SuperPeopleAPITest {
         Assertions.assertNotNull(result);
     }
 
+    @Test
+    void testExperienceAndLevelApplierWinnerNotFoundExceptionError() throws SuperPeopleNotFoundException {
+        var winner = SuperPeopleBuilder.superPeopleInvalidNameExceptionErrorBuilder();
+        var battleResultDTO = BattleResultDTOBuilder.battleResultDTOBuilderSuccess();
+        when(superPeopleService.experienceAndLevelApplier(eq(winner.getId()), eq(true)))
+                .thenThrow(new SuperPeopleNotFoundException("S01", "not found"));
+        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
+                () -> {
+                    superPeopleAPI.battleExperienceAndLevelApplier(battleResultDTO);
+                });
+        Assertions.assertEquals("S01", thrown.getCode());
+        Assertions.assertEquals("not found", thrown.getMessage());
+    }
+
+    @Test
+    void testExperienceAndLevelApplierLoserNotFoundExceptionError() throws SuperPeopleNotFoundException {
+        var winner = SuperPeopleBuilder.superPeopleSuccessBuilder();
+        var loser = SuperPeopleBuilder.superPeopleInvalidNameExceptionErrorBuilder();
+        var battleResultDTO = BattleResultDTOBuilder.battleResultDTOBuilderSuccess();
+        when(superPeopleService.experienceAndLevelApplier(eq(winner.getId()), eq(true)))
+                .thenReturn(winner);
+        when(superPeopleService.experienceAndLevelApplier(eq(loser.getId()), eq(false)))
+                .thenThrow(new SuperPeopleNotFoundException("S01", "not found"));
+        SuperPeopleNotFoundException thrown = Assertions.assertThrows(SuperPeopleNotFoundException.class,
+                () -> {
+                    superPeopleAPI.battleExperienceAndLevelApplier(battleResultDTO);
+                });
+        Assertions.assertEquals("S01", thrown.getCode());
+        Assertions.assertEquals("not found", thrown.getMessage());
+    }
+
 }
