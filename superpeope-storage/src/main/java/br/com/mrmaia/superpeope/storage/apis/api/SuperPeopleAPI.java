@@ -78,31 +78,16 @@ public class SuperPeopleAPI implements ISuperPeopleAPI {
                                          @RequestBody SuperPeopleDTO superPeopleDTO)
             throws SuperPeopleNotFoundException, InvalidNameException {
 
-        SuperPeople superPeople = ISuperPeopleMapper.INSTANCE.convertToEntity(superPeopleDTO);
-        SuperPeople updatedSuperPeople = superPeopleService.update(superPeopleId, superPeople);
-        SuperPeopleDTO updatedSuperPeopleDTO = ISuperPeopleMapper.INSTANCE.convertToDto(updatedSuperPeople);
         return SuperPeopleResponseDTO.builder()
-                .data(updatedSuperPeopleDTO
-                        /*SuperPeopleDTOAdapter.convertTo(
+                .data(
+                        superPeopleMapper.convertToDto(
                                 superPeopleService.update(
-                                        SuperPeopleAdapter.convertTo(superPeopleDTO)
+                                        superPeopleId, superPeopleMapper.convertToEntity(
+                                                superPeopleDTO)
                                 )
                         )
-
-                         */
                 ).build();
     }
-
-    //@PostMapping("/new")
-    //    public SuperPeopleResponseDTO add(@RequestBody SuperPeopleDTO superPeopleDTO)
-    //            throws InvalidNameException, BattleAttributeWithValueZeroException,
-    //            ExcessiveTotalBattleAttributesException {
-    //        return SuperPeopleResponseDTO.builder()
-    //                .data(
-    //                        superPeopleMapper.convertToDto(
-    //                                superPeopleService.save(
-    //                                        superPeopleMapper.convertToEntity(superPeopleDTO))).build();
-    //    }
 
     @PutMapping("/battle-result/super-people")
     public ResponseEntity battleExperienceAndLevelApplier(@RequestBody BattleResultDTO battleResultDTO)
@@ -113,7 +98,6 @@ public class SuperPeopleAPI implements ISuperPeopleAPI {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
 
     @DeleteMapping("/{superPeopleId}")
     public ResponseEntity<DeleteResponseDTO> delete(@PathVariable("superPeopleId") Long superPeopleId)
