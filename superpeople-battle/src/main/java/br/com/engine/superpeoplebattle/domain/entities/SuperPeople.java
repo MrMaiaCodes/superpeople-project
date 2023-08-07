@@ -15,22 +15,37 @@ public class SuperPeople {
     }
 
     public static SuperPeople firstHitShower(SuperPeople fighterOne, SuperPeople fighterTwo) {
-        return firstHitFinder(fighterOne, fighterTwo);
+        return fastestHeroFinder(fighterOne, fighterTwo);
     }
 
-    private static SuperPeople firstHitFinder(SuperPeople fighterOne, SuperPeople fighterTwo) {
-        if (fighterOne.getAgility() > fighterTwo.getAgility()) {
-            return fighterOne;
-        } else if (fighterOne.getAgility() < fighterTwo.getAgility()) {
-            return fighterTwo;
-        } else if (fighterOne.getLevel() > fighterTwo.getLevel()) {
-            return fighterOne;
-        } else if (fighterOne.getLevel() < fighterTwo.getLevel()) {
-            return fighterTwo;
-        } else if (fighterOne.getStrength() > fighterTwo.getStrength()) {
-            return fighterOne;
+    private static SuperPeople fastestHeroFinder(SuperPeople heroOne, SuperPeople heroTwo) {
+        if (heroOne.getAgility() > heroTwo.getAgility()) {
+            return heroOne;
+        } else if (heroOne.getAgility() < heroTwo.getAgility()) {
+            return heroTwo;
+        } else {
+            return highestLevelHeroFinder(heroOne, heroTwo);
         }
-        return fighterTwo;
+    }
+
+    private static SuperPeople highestLevelHeroFinder(SuperPeople heroOne, SuperPeople heroTwo) {
+        if (heroOne.getLevel() > heroTwo.getLevel()) {
+            return heroOne;
+        } else if (heroOne.getLevel() < heroTwo.getLevel()) {
+            return heroTwo;
+        } else {
+            return highestStrengthHeroFinder(heroOne, heroTwo);
+        }
+    }
+
+    private static SuperPeople highestStrengthHeroFinder(SuperPeople heroOne, SuperPeople heroTwo) {
+        if (heroOne.getStrength() > heroTwo.getStrength()) {
+            return heroOne;
+        } else if (heroOne.getStrength() < heroTwo.getStrength()) {
+            return heroTwo;
+        } else {
+            return null;
+        }
     }
 
 
