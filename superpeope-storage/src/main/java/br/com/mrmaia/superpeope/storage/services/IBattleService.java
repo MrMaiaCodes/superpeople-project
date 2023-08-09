@@ -8,5 +8,4 @@ import java.util.List;
 public interface IBattleService {
     SuperPeople superHeroFinder(Long hero) throws SuperPeopleNotFoundException;
 
-    List<SuperPeople> lowerLevelOpponentFinder(List<SuperPeople> opponentList, Long level);
 }

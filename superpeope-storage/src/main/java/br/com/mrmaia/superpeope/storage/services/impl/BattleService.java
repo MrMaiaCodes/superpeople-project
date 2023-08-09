@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,13 +20,20 @@ public class BattleService implements IBattleService {
 
     @Override
     public SuperPeople superHeroFinder(Long hero) throws SuperPeopleNotFoundException {
-       return superPeopleRepository.findById(hero)
+        return superPeopleRepository.findById(hero)
                 .orElseThrow(() -> new SuperPeopleNotFoundException("S04", "not found"));
     }
 
-    @Override
-    public List<SuperPeople> lowerLevelOpponentFinder(List<SuperPeople> opponentList, Long level) {
-        return opponentList;
-
+    private List<SuperPeople> opponentFinder(List<SuperPeople> opponentList, Long level,
+                                             Long totalOpponentAmount) {
+        List<SuperPeople> foundOpponents = new ArrayList<>();
+        long opponentAmount = 0;
+        for (SuperPeople opponent : opponentList) {
+            if (opponent.getLevel() == level && opponentAmount < totalOpponentAmount) {
+                foundOpponents.add(opponent);
+                opponentAmount++;
+            }
+        }
+        return foundOpponents;
     }
 }
