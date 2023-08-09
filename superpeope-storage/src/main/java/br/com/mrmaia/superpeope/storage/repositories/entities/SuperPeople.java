@@ -63,7 +63,7 @@ public class SuperPeople {
 
     public Long getId() { return id; }
 
-    public void setId(long id) { this.id = id; }
+    public void setId(Long id) { this.id = id; }
 
     public SuperPeople incrementLevel(SuperPeople superPeople) {
         return superPeople.builder().level(this.level + 1).build();

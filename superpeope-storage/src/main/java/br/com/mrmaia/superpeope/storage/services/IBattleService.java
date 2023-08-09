@@ -6,6 +6,5 @@ import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import java.util.List;
 
 public interface IBattleService {
-    SuperPeople superHeroFinder(Long hero) throws SuperPeopleNotFoundException;
 
 }
