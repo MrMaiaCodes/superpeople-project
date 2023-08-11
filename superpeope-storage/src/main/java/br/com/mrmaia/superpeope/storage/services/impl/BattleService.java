@@ -1,10 +1,13 @@
 package br.com.mrmaia.superpeope.storage.services.impl;
 
+import br.com.mrmaia.superpeope.storage.exceptions.BattleNotFoundException;
 import br.com.mrmaia.superpeope.storage.exceptions.SuperPeopleNotFoundException;
+import br.com.mrmaia.superpeope.storage.repositories.IBattleRepository;
 import br.com.mrmaia.superpeope.storage.repositories.ISuperPeopleRepository;
 import br.com.mrmaia.superpeope.storage.repositories.entities.Battle;
 import br.com.mrmaia.superpeope.storage.repositories.entities.SuperPeople;
 import br.com.mrmaia.superpeope.storage.services.IBattleService;
+import br.com.mrmaia.superpeope.storage.services.util.BattleUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,20 +16,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static java.util.Collections.addAll;
-
 @Service
 @Slf4j
 public class BattleService implements IBattleService {
 
     @Autowired
+    private IBattleRepository battleRepository;
+
+    @Autowired
     private ISuperPeopleRepository superPeopleRepository;
 
+    Random random = new Random();
+
+    @Override
+    public List<Battle> findBattleByName(String battleName) throws BattleNotFoundException {
+        var battleFind = battleRepository.findBattleByName(battleName);
+        BattleUtil.battleFoundVerifier(battleFind, battleName);
+        return battleFind;
+    }
+
+    @Override
     public Battle battleOrganizer(SuperPeople combatantOne) throws SuperPeopleNotFoundException {
 
         combatantOneFinder(combatantOne.getId());
-        List<SuperPeople> opponentList = opponentListCreator(combatantOne, 5L);
-        Battle battle = Battle.builder().superHeroOne(combatantOne).opponentList(opponentList).build();
+        List<SuperPeople> opponentList = opponentListCreator(combatantOne, 9L);
+        var opponent = opponentFinder(opponentList);
+        Battle battle = Battle.builder()
+                .name(combatantOne.getName() + " vs. " + opponent.getName())
+                .superHeroOne(combatantOne).superHeroTwo(opponent)
+                .build();
 
         return battle;
     }
@@ -43,7 +61,7 @@ public class BattleService implements IBattleService {
         listAdder(allCandidates, lowerLevelCandidates);
         listAdder(allCandidates, equalLevelCandidates);
         listAdder(allCandidates, higherLevelCandidates);
-        List<SuperPeople> opponentList = opponentGenerator(allCandidates, combatantOne, 9L);
+        List<SuperPeople> opponentList = opponentGenerator(allCandidates, combatantOne, desiredOpponentAmount);
         return opponentList;
     }
 
@@ -55,13 +73,13 @@ public class BattleService implements IBattleService {
 
     private List<SuperPeople> opponentFinder(Long level, Long desiredOpponentAmount) {
         List<SuperPeople> foundOpponents = new ArrayList<>();
-        List<SuperPeople> opponentList = new ArrayList<>();
+        List<SuperPeople> opponentList = new ArrayList<>(); //isso aqui tá certo?
         long opponentAmount = 0;
         for (SuperPeople opponent : opponentList) {
             if (opponent.getLevel().equals(level) && opponentAmount <= desiredOpponentAmount) {
                 foundOpponents.add(opponent);
                 opponentAmount++;
-            }
+            } //quantos opponents vão ser encontrados segundo essa fórmula?
         }
         return foundOpponents;
     }
@@ -72,7 +90,6 @@ public class BattleService implements IBattleService {
         if (foundOpponents == null) {
             List<SuperPeople> generatedOpponents = new ArrayList<>();
             do {
-                Random random = new Random();
                 int range = 1;
                 SuperPeople generatedOpponent = SuperPeople.builder()
                         .strength(combatantOne.getStrength() - range + random.nextInt(2 * range + 1))
@@ -99,7 +116,7 @@ public class BattleService implements IBattleService {
                         .build();
                 generatedOpponents.add(generatedOpponent);
                 instance++;
-            } while (instance <= (desiredOpponentAmount - foundOpponents.size()));
+            } while (instance <= (desiredOpponentAmount - foundOpponents.size())); //e aqui?
             foundOpponents.addAll(generatedOpponents);
             return foundOpponents;
 
@@ -110,5 +127,12 @@ public class BattleService implements IBattleService {
     private List<SuperPeople> listAdder(List<SuperPeople> finalList, List<SuperPeople> listToAdd) {
         finalList.addAll(listToAdd);
         return finalList;
+    }
+
+    private SuperPeople opponentFinder(List<SuperPeople> opponentList) {
+        int randomIndex = random.nextInt(opponentList.size());
+        SuperPeople opponentChosen = opponentList.get(randomIndex);
+
+        return opponentChosen;
     }
 }

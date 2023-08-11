@@ -21,13 +21,12 @@ public class Battle {
     @Column(name = "ID_BATTLE")
     private Long id;
 
-    @Column(name = "DS_COMBATANTONE")
-    @JoinColumn(name = "DS_SUPERPEOPLE")
-    private SuperPeople superHeroOne;
+    @Column(name = "DS_NAME")
+    private String name;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "DS_SUPERPEOPLE")
-    private List<SuperPeople> opponentList;
+    @Column(name = "DS_COMBATANTONE")
+    @JoinColumn(name = "DS_SUPERPEOPLE") // é assim?
+    private SuperPeople superHeroOne;
 
     @Column(name = "DS_COMBATANTTWO")
     @JoinColumn(name = "DS_SUPERPEOPLE")

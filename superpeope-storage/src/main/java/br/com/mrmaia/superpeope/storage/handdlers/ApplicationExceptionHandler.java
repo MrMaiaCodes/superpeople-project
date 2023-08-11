@@ -68,6 +68,21 @@ public class ApplicationExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(BattleNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> BattleNotFoundExceptionHandler(
+            BattleNotFoundException exception) {
+        log.info("not found");
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.builder()
+                        .data(ErrorSpecificationDTO.builder()
+                                .errorCode("404")
+                                .errorMessage(exception.getMessage())
+                                .build())
+                .build());
+    }
+
+
     @ExceptionHandler(SuperPowerNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> SuperPowerNotFoundExceptionHandler(
             SuperPowerNotFoundException exception) {
